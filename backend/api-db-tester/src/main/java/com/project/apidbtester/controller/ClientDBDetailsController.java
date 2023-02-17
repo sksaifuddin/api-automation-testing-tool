@@ -26,7 +26,7 @@ public class ClientDBDetailsController {
     }
 
     @GetMapping("/fetch-client-db-schema")
-    public Map<String, Map<String, List<String>>> fetchClientDBSchema(@RequestBody ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public Map<String, Map<String, List<Map<String, String>>>> fetchClientDBSchema(@RequestBody ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
         return clientDBDetailsService.fetchClientDBSchema(clientDBDetails);
     }
 }

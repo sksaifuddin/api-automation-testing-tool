@@ -36,7 +36,7 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
     }
 
     @Override
-    public Map<String, Map<String, List<String>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public Map<String, Map<String, List<Map<String, String>>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(clientDBDetails.getDatabaseUrl(), clientDBDetails.getUserName(), clientDBDetails.getPassword());
@@ -46,7 +46,7 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
 //            ResultSet resultSet = databaseMetaData.getTables(null, null, null, new String[]{"SYSTEM TABLE"});
 
 //            ClientDBSchema clientDBSchema = ne
-            Map<String, Map<String, List<String>>> map = new HashMap<>();
+            Map<String, Map<String, List<Map<String, String>>>> map = new HashMap<>();
 
             ResultSet resultSetTables = statement.executeQuery("show tables");
 //                    List<String> tables = new ArrayList<>();
@@ -57,10 +57,12 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
                     ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
                     ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
                     int colCount = resultSetMetaDataCols.getColumnCount();
-                    Map<String, List<String>> tableMap= new HashMap<>();
+                    Map<String, List<Map<String, String>>> tableMap= new HashMap<>();
                     tableMap.put("columns", new ArrayList<>());
                     for (int i = 1; i <= colCount; i++) {
-                        tableMap.get("columns").add(resultSetMetaDataCols.getColumnName(i));
+                        Map<String, String > colNameDataTypeMap = new HashMap<>();
+                        colNameDataTypeMap.put(resultSetMetaDataCols.getColumnName(i), resultSetMetaDataCols.getColumnTypeName(i));
+                        tableMap.get("columns").add(colNameDataTypeMap);
                     }
                     map.put(tableName, tableMap);
                     resultSetColumns.close();

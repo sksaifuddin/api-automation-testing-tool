@@ -10,5 +10,5 @@ import java.util.Map;
 
 public interface ClientDBDetailsService {
     public CustomApiResponseBody testClientDBConnection(ClientDBDetails clientDBDetails) throws ClientDBConnectionException;
-    public Map<String, Map<String, List<String>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException;
+    public Map<String, Map<String, List<Map<String, String>>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException;
 }
