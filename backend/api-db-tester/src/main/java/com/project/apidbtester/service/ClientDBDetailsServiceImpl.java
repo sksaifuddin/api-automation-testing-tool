@@ -2,6 +2,7 @@ package com.project.apidbtester.service;
 
 import com.project.apidbtester.error.ClientDBConnectionException;
 import com.project.apidbtester.model.ClientDBDetails;
+
 import com.project.apidbtester.model.CustomApiResponseBody;
 import com.project.apidbtester.repository.ClientDBDetailsRepository;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
     }
 
     @Override
-    public Map<String, List<String>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public Map<String, Map<String, List<String>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(clientDBDetails.getDatabaseUrl(), clientDBDetails.getUserName(), clientDBDetails.getPassword());
@@ -44,16 +45,31 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
 //            DatabaseMetaData databaseMetaData = connection.getMetaData();
 //            ResultSet resultSet = databaseMetaData.getTables(null, null, null, new String[]{"SYSTEM TABLE"});
 
-            ResultSet resultSet = statement.executeQuery("show tables");
-                    List<String> tables = new ArrayList<>();
-            while (resultSet.next()) {
-                String tableName = resultSet.getString(1);
+//            ClientDBSchema clientDBSchema = ne
+            Map<String, Map<String, List<String>>> map = new HashMap<>();
+
+            ResultSet resultSetTables = statement.executeQuery("show tables");
+//                    List<String> tables = new ArrayList<>();
+            while (resultSetTables.next()) {
+                String tableName = resultSetTables.getString(1);
                 if (tableName.contains("_seq")==false) {
-                    tables.add(tableName);
+                    Statement statementCols = connection.createStatement();
+                    ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
+                    ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
+                    int colCount = resultSetMetaDataCols.getColumnCount();
+                    Map<String, List<String>> tableMap= new HashMap<>();
+                    tableMap.put("columns", new ArrayList<>());
+                    for (int i = 1; i <= colCount; i++) {
+                        tableMap.get("columns").add(resultSetMetaDataCols.getColumnName(i));
+                    }
+                    map.put(tableName, tableMap);
+                    resultSetColumns.close();
+                    statementCols.close();
                 }
             }
-            Map<String, List<String>> map = new HashMap<>();
-            map.put("1", tables);
+            resultSetTables.close();
+            statement.close();
+            connection.close();
             return map;
         } catch (Exception e) {
             throw new ClientDBConnectionException("Database connection Failed, please check the details again");
