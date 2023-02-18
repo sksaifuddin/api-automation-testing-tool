@@ -3,15 +3,13 @@ package com.project.apidbtester.service;
 import com.project.apidbtester.error.ClientDBConnectionException;
 import com.project.apidbtester.model.ClientDBDetails;
 
+import com.project.apidbtester.model.ClientDBSchema;
 import com.project.apidbtester.model.CustomApiResponseBody;
 import com.project.apidbtester.repository.ClientDBDetailsRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,23 +34,49 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
     }
 
     @Override
-    public Map<String, Map<String, List<Map<String, String>>>> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public Map<String, ClientDBSchema> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(clientDBDetails.getDatabaseUrl(), clientDBDetails.getUserName(), clientDBDetails.getPassword());
+
 
             Statement statement = connection.createStatement();
 //            DatabaseMetaData databaseMetaData = connection.getMetaData();
 //            ResultSet resultSet = databaseMetaData.getTables(null, null, null, new String[]{"SYSTEM TABLE"});
 
 //            ClientDBSchema clientDBSchema = ne
-            Map<String, Map<String, List<Map<String, String>>>> map = new HashMap<>();
+            Map<String, ClientDBSchema> map = new HashMap<>();
 
-            ResultSet resultSetTables = statement.executeQuery("show tables");
+            DatabaseMetaData meta = connection.getMetaData();
+
+            ResultSet tables = meta.getTables(null, null, "%", new String[] { "TABLE" });
+
+//            ResultSet resultSetTables = statement.executeQuery("show tables");
 //                    List<String> tables = new ArrayList<>();
-            while (resultSetTables.next()) {
-                String tableName = resultSetTables.getString(1);
+
+
+            while (tables.next()) {
+//                tables.next();
+                List<String> primaryKeys = new ArrayList<>();
+
+                String catalog = tables.getString("TABLE_CAT");
+                String schema = tables.getString("TABLE_SCHEM");
+                String tableName = tables.getString("TABLE_NAME");
+
+//                try (ResultSet keys = meta.getPrimaryKeys(catalog, schema, tableName)) {
+//                    while (keys.next()) {
+//                        primaryKeys.add(keys.getString("COLUMN_NAME"));
+//                    }
+//                }
+
                 if (tableName.contains("_seq")==false) {
+
+                    try (ResultSet keys = meta.getPrimaryKeys(catalog, schema, tableName)) {
+                        while (keys.next()) {
+                            primaryKeys.add(keys.getString("COLUMN_NAME"));
+                        }
+                    }
+
                     Statement statementCols = connection.createStatement();
                     ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
                     ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
@@ -64,12 +88,12 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
                         colNameDataTypeMap.put(resultSetMetaDataCols.getColumnName(i), resultSetMetaDataCols.getColumnTypeName(i));
                         tableMap.get("columns").add(colNameDataTypeMap);
                     }
-                    map.put(tableName, tableMap);
+                    map.put(tableName, new ClientDBSchema(primaryKeys, tableMap));
                     resultSetColumns.close();
                     statementCols.close();
                 }
             }
-            resultSetTables.close();
+//            resultSetTables.close();
             statement.close();
             connection.close();
             return map;
