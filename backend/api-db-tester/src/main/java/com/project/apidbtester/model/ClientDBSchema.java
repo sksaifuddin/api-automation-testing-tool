@@ -4,27 +4,27 @@ import java.util.List;
 import java.util.Map;
 
 public class ClientDBSchema {
-    private List<String> primaryKeys;
-    private Map<String, List<Map<String, String>>> tableMap;
+    private List<String> primaryKeyList;
+    private List<Map<String, String>> columnsList;
 
-    public ClientDBSchema(List<String> primaryKeys, Map<String, List<Map<String, String>>> tableMap) {
-        this.primaryKeys = primaryKeys;
-        this.tableMap = tableMap;
+    public ClientDBSchema(List<String> primaryKeyList, List<Map<String, String>> columnsList) {
+        this.primaryKeyList = primaryKeyList;
+        this.columnsList = columnsList;
     }
 
-    public List<String> getPrimaryKeys() {
-        return primaryKeys;
+    public List<String> getPrimaryKeyList() {
+        return primaryKeyList;
     }
 
-    public void setPrimaryKeys(List<String> primaryKeys) {
-        this.primaryKeys = primaryKeys;
+    public void setPrimaryKeyList(List<String> primaryKeyList) {
+        this.primaryKeyList = primaryKeyList;
     }
 
-    public Map<String, List<Map<String, String>>> getTableMap() {
-        return tableMap;
+    public List<Map<String, String>> getColumnsList() {
+        return columnsList;
     }
 
-    public void setTableMap(Map<String, List<Map<String, String>>> tableMap) {
-        this.tableMap = tableMap;
+    public void setColumnsList(List<Map<String, String>> columnsList) {
+        this.columnsList = columnsList;
     }
 }

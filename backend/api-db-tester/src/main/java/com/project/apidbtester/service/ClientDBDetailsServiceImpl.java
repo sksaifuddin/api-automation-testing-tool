@@ -81,14 +81,13 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
                     ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
                     ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
                     int colCount = resultSetMetaDataCols.getColumnCount();
-                    Map<String, List<Map<String, String>>> tableMap= new HashMap<>();
-                    tableMap.put("columns", new ArrayList<>());
+                    List<Map<String, String>> columnsList= new ArrayList<>();
                     for (int i = 1; i <= colCount; i++) {
                         Map<String, String > colNameDataTypeMap = new HashMap<>();
                         colNameDataTypeMap.put(resultSetMetaDataCols.getColumnName(i), resultSetMetaDataCols.getColumnTypeName(i));
-                        tableMap.get("columns").add(colNameDataTypeMap);
+                        columnsList.add(colNameDataTypeMap);
                     }
-                    map.put(tableName, new ClientDBSchema(primaryKeys, tableMap));
+                    map.put(tableName, new ClientDBSchema(primaryKeys, columnsList));
                     resultSetColumns.close();
                     statementCols.close();
                 }
