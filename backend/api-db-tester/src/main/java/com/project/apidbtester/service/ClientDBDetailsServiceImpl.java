@@ -5,11 +5,16 @@ import com.project.apidbtester.model.ClientDBDetails;
 
 import com.project.apidbtester.model.ClientDBSchema;
 import com.project.apidbtester.model.CustomApiResponseBody;
+import com.project.apidbtester.model.TestDetails;
 import com.project.apidbtester.repository.ClientDBDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +101,32 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
             statement.close();
             connection.close();
             return map;
+        } catch (Exception e) {
+            throw new ClientDBConnectionException("Database connection Failed, please check the details again");
+        }
+    }
+
+    @Override
+    public String fetchTestResult(TestDetails testDetails) throws ClientDBConnectionException {
+        try {
+
+            URL url = new URL(testDetails.getUrl());
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            http.setRequestMethod(testDetails.getType().toUpperCase());
+            http.setDoOutput(true);
+            http.setRequestProperty("Content-Type", "application/json");
+
+            String payload = testDetails.getPayload();
+            byte[] out = payload.getBytes(StandardCharsets.UTF_8);
+
+            OutputStream stream = http.getOutputStream();
+            stream.write(out);
+
+            System.out.println(http.getResponseCode() + " " + http.getResponseMessage());
+            http.disconnect();
+
+
+            return null;
         } catch (Exception e) {
             throw new ClientDBConnectionException("Database connection Failed, please check the details again");
         }

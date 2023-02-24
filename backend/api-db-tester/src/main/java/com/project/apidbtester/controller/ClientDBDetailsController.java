@@ -4,6 +4,7 @@ import com.project.apidbtester.error.ClientDBConnectionException;
 import com.project.apidbtester.model.ClientDBDetails;
 import com.project.apidbtester.model.ClientDBSchema;
 import com.project.apidbtester.model.CustomApiResponseBody;
+import com.project.apidbtester.model.TestDetails;
 import com.project.apidbtester.service.ClientDBDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +24,13 @@ public class ClientDBDetailsController {
         return clientDBDetailsService.testClientDBConnection(clientDBDetails);
     }
 
-    @GetMapping("/fetch-client-db-schema")
+    @PostMapping("/fetch-client-db-schema")
     public Map<String, ClientDBSchema> fetchClientDBSchema(@RequestBody ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
         return clientDBDetailsService.fetchClientDBSchema(clientDBDetails);
+    }
+
+    @PostMapping("/test")
+    public String fetchTestResult(@RequestBody TestDetails testDetails) throws ClientDBConnectionException {
+        return clientDBDetailsService.fetchTestResult(testDetails);
     }
 }
