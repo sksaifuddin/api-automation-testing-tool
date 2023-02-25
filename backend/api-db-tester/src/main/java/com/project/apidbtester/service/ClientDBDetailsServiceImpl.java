@@ -126,7 +126,57 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
             http.disconnect();
 
 
-            return null;
+
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager
+                    .getConnection("jdbc:mysql://db-5308.cs.dal.ca/CSCI5308_16_TEST","CSCI5308_16_TEST_USER","phohKaiv2b");
+
+            Statement statement = connection.createStatement();
+
+            StringBuilder query = new StringBuilder("select ");
+
+            for (int i = 0; i < testDetails.getColsValsList().size(); i++) {
+                for (String key : testDetails.getColsValsList().get(i).keySet()) {
+                    if (i == testDetails.getColsValsList().size() - 1) query.append(key);
+                    else query.append(key ).append(", ");
+                }
+            }
+
+            query.append(" from ").append(testDetails.getTableName()).append(" where ");
+
+            for (int i = 0; i < testDetails.getPrimaryKey().size(); i++) {
+                for (String key : testDetails.getPrimaryKey().get(i).keySet()) {
+                    if (i == 0) query.append(key).append(" = ").append(testDetails.getPrimaryKey().get(i).get(key));
+                    else query.append(" and ").append(key).append(" = ").append(testDetails.getPrimaryKey().get(i).get(key));
+                }
+            }
+
+            query.append(";");
+
+            System.out.println("Query: " + query);
+            ResultSet result = statement.executeQuery(String.valueOf(query));
+
+            boolean mismatch = false;
+            StringBuilder response = new StringBuilder();
+
+            while(result.next()) {
+                for (int i = 0; i < testDetails.getColsValsList().size(); i++) {
+                    for (Map.Entry<String,String> entry : testDetails.getColsValsList().get(i).entrySet()){
+                        System.out.println(result.getString(entry.getKey()));
+                        if (!entry.getValue().equals(result.getString(entry.getKey()))) mismatch = false;
+//                        if (!entry.getValue().equals("abc")) mismatch = true;
+                        response.append("\nColumn name: ")
+                                .append(entry.getKey())
+                                .append("\tExpected value: ")
+                                .append(entry.getValue())
+                                .append("\tActual value: ")
+                                .append(result.getString(entry.getKey()));
+                    }
+                }
+            }
+            connection.close();
+            return mismatch ? "Test Failed: " + response.toString() : "Test Passed: " + response.toString();
         } catch (Exception e) {
             throw new ClientDBConnectionException("Database connection Failed, please check the details again");
         }
