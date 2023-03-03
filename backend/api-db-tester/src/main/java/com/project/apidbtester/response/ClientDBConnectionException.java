@@ -1,4 +1,4 @@
-package com.project.apidbtester.error;
+package com.project.apidbtester.response;
 
 public class ClientDBConnectionException extends Exception {
     public ClientDBConnectionException() {

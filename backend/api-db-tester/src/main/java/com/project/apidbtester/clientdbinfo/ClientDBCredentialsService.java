@@ -1,12 +1,10 @@
-package com.project.apidbtester.service;
+package com.project.apidbtester.clientdbinfo;
 
-import com.project.apidbtester.error.ClientDBConnectionException;
-import com.project.apidbtester.model.ClientDBDetails;
+import com.project.apidbtester.clientdbinfo.dtos.ClientDBSchema;
+import com.project.apidbtester.response.ClientDBConnectionException;
 
-import com.project.apidbtester.model.ClientDBSchema;
-import com.project.apidbtester.model.CustomApiResponseBody;
-import com.project.apidbtester.model.TestDetails;
-import com.project.apidbtester.repository.ClientDBDetailsRepository;
+import com.project.apidbtester.response.CustomApiResponseBody;
+import com.project.apidbtester.testapis.dtos.TestDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,15 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
+public class ClientDBCredentialsService {
     @Autowired
-    private ClientDBDetailsRepository clientDBDetailsRepository;
+    private ClientDBCredentialsRepository clientDBCredentialsRepository;
 
-    @Override
-    public CustomApiResponseBody testClientDBConnection(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public CustomApiResponseBody testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            DriverManager.getConnection(clientDBDetails.getDatabaseUrl(), clientDBDetails.getUserName(), clientDBDetails.getPassword());
+            DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
             CustomApiResponseBody successResponse = new CustomApiResponseBody(HttpStatus.valueOf(200), "DB Connection Successful", 200);
             return successResponse;
         } catch (Exception e) {
@@ -38,11 +35,10 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
         }
     }
 
-    @Override
-    public Map<String, ClientDBSchema> fetchClientDBSchema(ClientDBDetails clientDBDetails) throws ClientDBConnectionException {
+    public Map<String, ClientDBSchema> fetchClientDBSchema(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(clientDBDetails.getDatabaseUrl(), clientDBDetails.getUserName(), clientDBDetails.getPassword());
+            Connection connection = DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
 
 
             Statement statement = connection.createStatement();
@@ -106,7 +102,6 @@ public class ClientDBDetailsServiceImpl implements ClientDBDetailsService {
         }
     }
 
-    @Override
     public String fetchTestResult(TestDetails testDetails) throws ClientDBConnectionException {
         try {
 

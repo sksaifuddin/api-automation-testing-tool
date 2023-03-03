@@ -1,6 +1,5 @@
-package com.project.apidbtester.error;
+package com.project.apidbtester.response;
 
-import com.project.apidbtester.model.CustomApiResponseBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

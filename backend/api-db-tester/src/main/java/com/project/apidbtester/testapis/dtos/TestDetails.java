@@ -1,4 +1,4 @@
-package com.project.apidbtester.model;
+package com.project.apidbtester.testapis.dtos;
 
 import lombok.Data;
 
