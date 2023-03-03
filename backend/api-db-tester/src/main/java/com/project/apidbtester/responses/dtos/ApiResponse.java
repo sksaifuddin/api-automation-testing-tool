@@ -1,4 +1,4 @@
-package com.project.apidbtester.response;
+package com.project.apidbtester.responses.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomApiResponseBody {
+public class ApiResponse {
     private HttpStatus status;
     private String message;
     private int statusCode;

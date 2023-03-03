@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity(name="ClientDBCredentials")
 public class ClientDBCredentialsEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long databaseId;
     private String databaseUrl;
     private String userName;

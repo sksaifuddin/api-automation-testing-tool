@@ -1,8 +1,8 @@
-package com.project.apidbtester.response;
+package com.project.apidbtester.responses;
 
 public class ClientDBConnectionException extends Exception {
     public ClientDBConnectionException() {
-        super();
+        super("Database connection Failed, please check the details again");
     }
 
     public ClientDBConnectionException(String message) {
