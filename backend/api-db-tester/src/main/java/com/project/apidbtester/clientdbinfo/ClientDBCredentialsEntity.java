@@ -1,4 +1,4 @@
-package com.project.apidbtester.model;
+package com.project.apidbtester.clientdbinfo;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-public class ClientDBDetails {
+@Entity(name="ClientDBCredentials")
+public class ClientDBCredentialsEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long databaseId;
     private String databaseUrl;
     private String userName;
