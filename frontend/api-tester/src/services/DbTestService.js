@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiURL = '/test-client-db-connection';
+const apiURL = 'api/test-client-db-connection';
 
 export async function testClientDBConnection(url, userName, password) {
     const response = await axios.post(apiURL, {
