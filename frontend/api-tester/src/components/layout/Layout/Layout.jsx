@@ -14,7 +14,7 @@ const Layout = (props) => {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <Sidebar></Sidebar>
                 </Grid>
                 <Grid item xs={8}>

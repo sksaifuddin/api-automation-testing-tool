@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+.component-background {
+  background-color: #208ee6;
+  color: rgb(6, 27, 100);
+}
+
 * {
   margin: 0;
   padding: 0;

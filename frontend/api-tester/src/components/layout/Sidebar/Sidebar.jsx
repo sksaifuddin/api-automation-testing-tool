@@ -1,10 +1,12 @@
 import React from "react";
+// eslint-disable-next-line no-unused-vars
 import style from './Sidebar.style.scss';
+import DbConnectionTest from "../../db-connection-test/DbConnectionTest/DbConnectionTest";
 
 const Sidebar = (props) => {
     return <>
         <div className="sidebarContainer">
-            <h1>This is sidebar component</h1>
+           <DbConnectionTest></DbConnectionTest>
         </div>
     </>;
 }
