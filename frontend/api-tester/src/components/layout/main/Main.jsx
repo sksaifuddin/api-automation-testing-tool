@@ -1,7 +1,10 @@
 import React from "react";
+import AddTestCaseContainer from "../../add-test-case/container/add-test-case-container/AddTestCaseContainer";
 
 const main = (props) => {
-    return <><h1>This is main component</h1></>;
+    return <>
+        <AddTestCaseContainer></AddTestCaseContainer>
+    </>;
 }
 
 export default main;
