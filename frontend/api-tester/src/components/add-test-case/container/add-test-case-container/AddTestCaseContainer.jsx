@@ -1,12 +1,16 @@
-import React from 'react';
-import AddTestCase from '../../components/AddTestCase';
+import React from "react";
+import AddTestCase from "../../components/AddTestCase";
+// eslint-disable-next-line no-unused-vars
+import styles from "./AddTestCaseContainer.scss"
 
 const AddTestCaseContainer = () => {
   return (
     <>
-      <AddTestCase></AddTestCase>
+      <div className="add-test-case-container">
+        <AddTestCase></AddTestCase>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default AddTestCaseContainer
+export default AddTestCaseContainer;
