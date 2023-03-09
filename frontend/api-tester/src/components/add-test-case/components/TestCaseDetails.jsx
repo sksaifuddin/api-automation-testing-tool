@@ -5,11 +5,31 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField
+  TextField,
 } from "@mui/material";
-import React from "react";
+import AddDeleteColumnTable from "./AddDeleteColumnTable/AddDeleteColumnTable";
+import React, { useState } from "react";
 
-function TestCaseDetails() {
+function TestCaseDetails({ clientDBMetaData }) {
+  const [selectedTable, setSelectedTable] = useState("");
+  const [selectedPrimaryKeyValue, setSelectedPrimaryKeyValue] = useState({key: "", value: ""});
+  console.log("client db metda data", clientDBMetaData);
+  const getTableMenuItems = () => {
+    return Object.keys(clientDBMetaData).map((key, index) => (
+        <MenuItem value={key} key={index}>{key}</MenuItem>
+    ));
+  };
+
+  const handleSelectedTableChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedTable(selectedValue);
+    setSelectedPrimaryKeyValue({ 
+        value: selectedPrimaryKeyValue.value, 
+        key: Object.keys(clientDBMetaData).find((key) => key === selectedValue)
+    });
+    console.log('selected primarty key', selectedPrimaryKeyValue)
+  }
+
   return (
     <div>
       <Box>
@@ -21,46 +41,48 @@ function TestCaseDetails() {
             <Select
               labelId="demo-simple-select-required-label"
               id="demo-simple-select-required"
-              // value={}
-              label="Type *"
-              // onChange={handleChange}
+              value={selectedTable}
+              label="Table *"
+              onChange={(e) => handleSelectedTableChange(e)}
             >
-              <MenuItem value={"GET"}>GET</MenuItem>
-              <MenuItem value={"POST"}>POST</MenuItem>
-              <MenuItem value={"PUT"}>PUT</MenuItem>
-              <MenuItem value={"DELETE"}>PUT</MenuItem>
+              {getTableMenuItems()}
             </Select>
           </FormControl>
         </Grid>
-        <Grid container spacing={5}>
-        <Grid item xs={4}>
-        <FormControl required sx={{ width: 200 }}>
-            <InputLabel id="demo-simple-select-required-label">
-              Primary Key
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-required-label"
-              id="demo-simple-select-required"
-              // value={}
-              label="Type *"
-              // onChange={handleChange}
-            >
-              <MenuItem value={"GET"}>GET</MenuItem>
-              <MenuItem value={"POST"}>POST</MenuItem>
-              <MenuItem value={"PUT"}>PUT</MenuItem>
-              <MenuItem value={"DELETE"}>PUT</MenuItem>
-            </Select>
-          </FormControl>
+        <Grid container spacing={5} marginBottom={2}>
+          <Grid item xs={4}>
+            <FormControl required sx={{ width: 200 }}>
+              <InputLabel id="demo-simple-select-required-label">
+                Primary Key
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-required-label"
+                id="demo-simple-select-required"
+                value={selectedPrimaryKeyValue.key}
+                label="Primary Key *"
+                disabled
+              >
+                <MenuItem value={selectedPrimaryKeyValue.key}>{selectedPrimaryKeyValue.key}</MenuItem>
+                <MenuItem value={"POST"}>POST</MenuItem>
+                <MenuItem value={"PUT"}>PUT</MenuItem>
+                <MenuItem value={"DELETE"}>PUT</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={8}>
+            <TextField
+              width={200}
+              required
+              // value={username}
+              label="value"
+              // onChange={(e) => setUsername(e.target.value)}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={8}>
-        <TextField
-                        width={200}
-                        required
-                        // value={username}
-                        label="value"
-                        // onChange={(e) => setUsername(e.target.value)}
-                    />
-        </Grid>
+        <Grid container>
+          <Grid item xs={12}>
+            <AddDeleteColumnTable></AddDeleteColumnTable>
+          </Grid>
         </Grid>
       </Box>
     </div>

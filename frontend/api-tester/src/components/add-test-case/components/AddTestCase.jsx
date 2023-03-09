@@ -11,7 +11,9 @@ import {
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import TestCaseDetails from "./TestCaseDetails";
 
-function AddTestCase() {
+
+function AddTestCase({ clientDBMetaData }) {
+  
   return (
     <div>
       <Box>
@@ -56,7 +58,7 @@ function AddTestCase() {
             />
           </Grid>
           <Grid item xs={7}>
-            <TestCaseDetails></TestCaseDetails>
+            <TestCaseDetails clientDBMetaData={{...clientDBMetaData}}></TestCaseDetails>
           </Grid>
         </Grid>
       </Box>
