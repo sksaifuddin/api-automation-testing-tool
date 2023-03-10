@@ -2,24 +2,29 @@ package com.project.apidbtester.testapis.put;
 
 import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
 import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
-import com.project.apidbtester.clientdbinfo.ClientDBInfoService;
 import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.testapis.dtos.ColumnResult;
+import com.project.apidbtester.testapis.dtos.TestResponse;
+import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
+import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.responses.ClientDBConnectionException;
-import com.project.apidbtester.testapis.dtos.TestDetails;
+import com.project.apidbtester.testapis.entities.TestColumnValue;
+import com.project.apidbtester.testapis.entities.TestCaseDetails;
+import com.project.apidbtester.testapis.dtos.TestInput;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.net.ConnectException;
+import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 @Service
 public class PutApiService {
@@ -27,80 +32,109 @@ public class PutApiService {
     @Autowired
     ClientDBInfoRepository clientDBInfoRepository;
 
-    public String fetchTestResult(TestDetails testDetails) throws ClientDBConnectionException {
+    @Autowired
+    private TestCaseDetailsRepository testCaseDetailsRepository;
+
+    @Autowired
+    private ColumnValueRepository columnValueRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public TestResponse fetchTestResult(TestInput testInput) {
+
+        TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
+        List<TestColumnValue> testColumnValues = testInput.getColumnValues();
+        TestResponse testResponse = new TestResponse();
+//        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
+
         try {
+            RequestSpecification request = RestAssured.given();
+            request.contentType(ContentType.JSON);
+            request.baseUri(testCaseDetails.getUrl());
+            request.body(testCaseDetails.getPayload());
+            Response r = request.put();
+            testResponse.setHttpStatusCode(r.statusCode());
+            testCaseDetails.setHttpStatusCode(r.statusCode());
 
-            URL url = new URL(testDetails.getUrl());
-            HttpURLConnection http = (HttpURLConnection)url.openConnection();
-            http.setRequestMethod(testDetails.getType().toUpperCase());
-            http.setDoOutput(true);
-            http.setRequestProperty("Content-Type", "application/json");
-
-            String payload = testDetails.getPayload();
-            byte[] out = payload.getBytes(StandardCharsets.UTF_8);
-
-            OutputStream stream = http.getOutputStream();
-            stream.write(out);
-
-            http.disconnect();
-
-            Optional<ClientDBCredentialsEntity> clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID);
-
-            if (clientDBCredentials==null) {
-                throw new ClientDBConnectionException("Client db credentials not found");
+            if (r.statusCode() != HttpStatus.OK.value()) {
+                testResponse.setHttpErrorMsg(r.statusLine());
+                testResponse.setHttpErrorMsg(r.body().print());
+                testCaseDetails.setPassed(false);
+                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetailsRepository.save(testCaseDetails);
+                return testResponse;
             }
-            
+
+            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
+
             Class.forName(GlobalConstants.JDBC_DRIVER);
             Connection connection = DriverManager
-                    .getConnection(clientDBCredentials.get().getDatabaseUrl(),clientDBCredentials.get().getUserName(),clientDBCredentials.get().getPassword());
+                    .getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
 
             Statement statement = connection.createStatement();
 
             StringBuilder query = new StringBuilder("select ");
 
-            for (int i = 0; i < testDetails.getColsValsList().size(); i++) {
-                for (String key : testDetails.getColsValsList().get(i).keySet()) {
-                    if (i == testDetails.getColsValsList().size() - 1) query.append(key);
-                    else query.append(key ).append(", ");
-                }
+            for (int i = 0; i < testColumnValues.size(); i++) {
+                if (i == testColumnValues.size() - 1) query.append(testColumnValues.get(i).getColumnName());
+                else query.append(testColumnValues.get(i).getColumnName()).append(", ");
             }
 
-            query.append(" from ").append(testDetails.getTableName()).append(" where ");
+            query.append(" from ")
+                    .append(testCaseDetails.getTableName())
+                    .append(" where ")
+                    .append(testCaseDetails.getPrimaryKeyName())
+                    .append(" = ")
+                    .append(testCaseDetails.getPrimaryKeyValue())
+                    .append(";");
 
-            for (int i = 0; i < testDetails.getPrimaryKey().size(); i++) {
-                for (String key : testDetails.getPrimaryKey().get(i).keySet()) {
-                    if (i == 0) query.append(key).append(" = ").append(testDetails.getPrimaryKey().get(i).get(key));
-                    else query.append(" and ").append(key).append(" = ").append(testDetails.getPrimaryKey().get(i).get(key));
-                }
-            }
-
-            query.append(";");
-
-            System.out.println("Query: " + query);
             ResultSet result = statement.executeQuery(String.valueOf(query));
 
-            boolean mismatch = false;
-            StringBuilder response = new StringBuilder();
+            boolean allTestPassed = true;
 
-            while(result.next()) {
-                for (int i = 0; i < testDetails.getColsValsList().size(); i++) {
-                    for (Map.Entry<String,String> entry : testDetails.getColsValsList().get(i).entrySet()){
-                        System.out.println(result.getString(entry.getKey()));
-                        if (!entry.getValue().equals(result.getString(entry.getKey()))) mismatch = false;
-//                        if (!entry.getValue().equals("abc")) mismatch = true;
-                        response.append("\nColumn name: ")
-                                .append(entry.getKey())
-                                .append("\tExpected value: ")
-                                .append(entry.getValue())
-                                .append("\tActual value: ")
-                                .append(result.getString(entry.getKey()));
+            while (result.next()) {
+                for (int i = 0; i < testColumnValues.size(); i++) {
+                    if (testColumnValues.get(i).getExpectedValue()
+                            .equals(result.getString(testColumnValues.get(i).getColumnName()))) {
+                        testColumnValues.get(i).setPassed(true);
+                    } else {
+                        allTestPassed = false;
                     }
+                    testColumnValues.get(i).setActualValue(result.getString(testColumnValues.get(i).getColumnName()));
                 }
             }
             connection.close();
-            return mismatch ? "Test Failed: " + response.toString() : "Test Passed: " + response.toString();
+
+            if (allTestPassed) {
+                testCaseDetails.setPassed(true);
+                testResponse.setAllTestPassed(true);
+            }
+            TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+
+            for (TestColumnValue testColumnValue : testColumnValues) {
+                testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
+                columnValueRepository.save(testColumnValue);
+            }
+            List<ColumnResult> columnResults = Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class));
+            testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
+            return testResponse;
         } catch (Exception e) {
-            throw new ClientDBConnectionException("Database connection Failed, please check the details again");
+            if (e instanceof ConnectException) {
+                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
+                testResponse.setHttpErrorMsg("Unable to call api");
+//                testCaseDetails.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
+//                testCaseDetailsRepository.save(testCaseDetails);
+                return testResponse;
+            } else {
+                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
+                return testResponse;
+//                testResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//                testCaseDetails.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//                testCaseDetailsRepository.save(testCaseDetails);
+//                return testResponse;
+            }
         }
     }
 }
