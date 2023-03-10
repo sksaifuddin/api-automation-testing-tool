@@ -1,4 +1,4 @@
-package com.project.apidbtester.testapis.dtos;
+package com.project.apidbtester.testapis.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,13 +11,14 @@ import java.util.List;
 public class TestCaseDetails {
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
     private String type;
     private String url;
     private String payload;
     private String tableName;
     private String primaryKeyName;
     private String primaryKeyValue;
-//    @OneToMany(mappedBy = "testCaseDetails", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ColumnValue> columnValues;
+    private Integer httpStatusCode;
+    private String httpErrorMsg = "";
+    private Boolean passed=false;
 }

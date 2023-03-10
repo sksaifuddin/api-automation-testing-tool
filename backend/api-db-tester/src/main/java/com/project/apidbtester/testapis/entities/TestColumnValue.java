@@ -1,18 +1,18 @@
-package com.project.apidbtester.testapis.dtos;
+package com.project.apidbtester.testapis.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class ColumnValue {
+public class TestColumnValue {
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
     private String columnName;
     private String expectedValue;
     private String actualValue;
-    private boolean passed = true;
+    private Boolean passed=false;
     @ManyToOne
     @JoinColumn(name = "test_case_details_id", referencedColumnName = "id")
     private TestCaseDetails testCaseDetails;
