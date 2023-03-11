@@ -58,7 +58,6 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
               <Select
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
-                value={testCaseDetails.type || undefined}
                 label="Type *"
                 onChange={handleTypeChange}
               >
@@ -73,7 +72,6 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
             <TextField
               fullWidth
               required
-              value={testCaseDetails.url || undefined}
               label="URL"
               onChange={handleURLChange}
             />
@@ -85,7 +83,6 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
             <TextareaAutosize
               aria-label="minimum height"
               minRows={20}
-              value={testCaseDetails.payload || undefined}
               onBlur={handlePayloadChange}
               placeholder="Payload Body"
               style={{ width: 400 }}

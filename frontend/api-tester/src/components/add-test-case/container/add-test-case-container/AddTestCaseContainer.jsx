@@ -8,7 +8,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { Grid } from "@mui/material";
 import { executeTestCase } from "../../../../services/executeTestCase";
 
-const AddTestCaseContainer = () => {
+const AddTestCaseContainer = ({getTestCaseExecutionResult}) => {
   const [clientDBMetaData, setClientDBMetaData] = useState({});
 
   let finalTestObject = {testCaseDetails: {}, columnValues: {}};
@@ -29,7 +29,7 @@ const AddTestCaseContainer = () => {
   };
 
   const testCaseExecution = () => {
-    executeTestCase(finalTestObject).then((data) => console.log('Finally it workd',data))
+    executeTestCase(finalTestObject).then((data) => getTestCaseExecutionResult(data))
   }
 
   return (
