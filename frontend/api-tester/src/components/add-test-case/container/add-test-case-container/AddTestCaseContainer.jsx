@@ -6,6 +6,7 @@ import styles from "./AddTestCaseContainer.scss";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
 import { Grid } from "@mui/material";
+import { executeTestCase } from "../../../../services/executeTestCase";
 
 const AddTestCaseContainer = () => {
   const [clientDBMetaData, setClientDBMetaData] = useState({});
@@ -28,7 +29,7 @@ const AddTestCaseContainer = () => {
   };
 
   const testCaseExecution = () => {
-
+    executeTestCase(finalTestObject).then((data) => console.log('Finally it workd',data))
   }
 
   return (
