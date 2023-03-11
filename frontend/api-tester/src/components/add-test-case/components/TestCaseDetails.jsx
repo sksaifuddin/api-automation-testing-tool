@@ -13,24 +13,36 @@ import React, { useState } from "react";
 function TestCaseDetails({ clientDBMetaData }) {
   const [selectedTable, setSelectedTable] = useState("");
   const [selectedPrimaryKeyValue, setSelectedPrimaryKeyValue] = useState({key: "", value: ""});
-  console.log("client db metda data", clientDBMetaData);
   const getTableMenuItems = () => {
     return Object.keys(clientDBMetaData).map((key, index) => (
         <MenuItem value={key} key={index}>{key}</MenuItem>
     ));
   };
 
+  const getSelectedTableData = (selectedTableName)  => {
+      console.log('--->', selectedTableName);
+      
+  }
+
   const handleSelectedTableChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedTable(selectedValue);
+    getSelectedTableData(selectedValue);
     setSelectedPrimaryKeyValue({ 
         value: selectedPrimaryKeyValue.value, 
-        key: Object.keys(clientDBMetaData).find((key) => key === selectedValue)
+        key: Object.entries(clientDBMetaData).filter((entry) => {
+          const [key] = entry;
+          if(key === selectedValue) {
+            return true;
+          } 
+          return false;
+        }).map(data => data[1])[0].primaryKeyList[0]
     });
-    console.log('selected primarty key', selectedPrimaryKeyValue)
+    // console.log('selected primarty key', selectedPrimaryKeyValue)
   }
 
   return (
+   
     <div>
       <Box>
         <Grid container marginBottom={2}>
@@ -63,9 +75,6 @@ function TestCaseDetails({ clientDBMetaData }) {
                 disabled
               >
                 <MenuItem value={selectedPrimaryKeyValue.key}>{selectedPrimaryKeyValue.key}</MenuItem>
-                <MenuItem value={"POST"}>POST</MenuItem>
-                <MenuItem value={"PUT"}>PUT</MenuItem>
-                <MenuItem value={"DELETE"}>PUT</MenuItem>
               </Select>
             </FormControl>
           </Grid>
