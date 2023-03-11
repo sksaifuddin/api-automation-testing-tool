@@ -5,7 +5,7 @@ import Sidebar from "../Sidebar/Sidebar";
 // import styles from './Layout.style.scss';
 import Box from '@mui/material/Box';
 import {Grid} from "@mui/material";
-import TestCases from "../../TestCases/testcases";
+
 const Layout = (props) => {
     return <>
         <Box>
@@ -22,12 +22,6 @@ const Layout = (props) => {
                     <Main></Main>
                 </Grid>
             </Grid>
-            
-            <Grid container>
-                <Grid item xs={3}>
-                    <TestCases></TestCases>
-                </Grid>
-            </Grid> 
 
         </Box>
     </>;
