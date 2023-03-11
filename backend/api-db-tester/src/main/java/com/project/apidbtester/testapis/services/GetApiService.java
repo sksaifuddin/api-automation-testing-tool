@@ -30,10 +30,7 @@ import io.restassured.specification.RequestSpecification;
 import javax.sql.rowset.CachedRowSet;
 
 @Service
-public class PostApiService {
-
-    @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
+public class GetApiService {
 
     @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
@@ -55,8 +52,7 @@ public class PostApiService {
             RequestSpecification request = RestAssured.given();
             request.contentType(ContentType.JSON);
             request.baseUri(testCaseDetails.getUrl());
-            request.body(testCaseDetails.getPayload());
-            Response r = request.post();
+            Response r = request.get();
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
@@ -69,58 +65,18 @@ public class PostApiService {
                 return testResponse;
             }
 
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
-
-            String tableName = testCaseDetails.getTableName();
             JSONObject jsonObject = new JSONObject(r.asString());
-
-            String primaryKeyName = ClientDBData.getPrimaryKey(tableName, clientDBCredentials);
-            String primaryKeyValue = String.valueOf(jsonObject.get(primaryKeyName));
-
-            testCaseDetails.setPrimaryKeyName(primaryKeyName);
-            testCaseDetails.setPrimaryKeyValue(primaryKeyValue);
-
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-
-            Connection connection = null;
-            connection = DriverManager.getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
-
-            Statement statement = null;
-
-            statement = connection.createStatement();
-
-            StringBuilder query = new StringBuilder("select ");
-
-            for (int i = 0; i < testColumnValues.size(); i++) {
-                if (i == testColumnValues.size() - 1) query.append(testColumnValues.get(i).getColumnName());
-                else query.append(testColumnValues.get(i).getColumnName()).append(", ");
-            }
-
-            query.append(" from ")
-                    .append(testCaseDetails.getTableName())
-                    .append(" where ")
-                    .append(testCaseDetails.getPrimaryKeyName())
-                    .append(" = ")
-                    .append(testCaseDetails.getPrimaryKeyValue())
-                    .append(";");
-
-            System.out.println(query);
-            ResultSet result = statement.executeQuery(query.toString());
-
-//            connection.close();
 
             boolean allTestPassed = true;
 
-            while (result.next()) {
-                for (int i = 0; i < testColumnValues.size(); i++) {
-                    if (testColumnValues.get(i).getExpectedValue()
-                            .equals(result.getString(testColumnValues.get(i).getColumnName()))) {
-                        testColumnValues.get(i).setPassed(true);
-                    } else {
-                        allTestPassed = false;
-                    }
-                    testColumnValues.get(i).setActualValue(result.getString(testColumnValues.get(i).getColumnName()));
+            for (TestColumnValue columnValue : testColumnValues) {
+                if (columnValue.getExpectedValue().toString()
+                        .equals(jsonObject.get(columnValue.getColumnName()).toString())) {
+                    columnValue.setPassed(true);
+                } else {
+                    allTestPassed = false;
                 }
+                columnValue.setActualValue(jsonObject.get(columnValue.getColumnName()).toString());
             }
 
             System.out.println(testColumnValues);
@@ -137,24 +93,16 @@ public class PostApiService {
             }
             List<ColumnResult> columnResults = Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class));
             testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
-            connection.close();
+
             return testResponse;
         } catch (Exception e) {
-            if (e instanceof ConnectException) {
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Unable to call api");
-//                testCaseDetails.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-//                testCaseDetailsRepository.save(testCaseDetails);
-                return testResponse;
-            } else {
-                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
-                return testResponse;
+            testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
 //                testResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 //                testCaseDetails.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 //                testCaseDetailsRepository.save(testCaseDetails);
 //                return testResponse;
-            }
+            return testResponse;
         }
     }
 }
