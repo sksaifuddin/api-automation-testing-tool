@@ -1,4 +1,4 @@
-package com.project.apidbtester.testapis.post;
+package com.project.apidbtester.testapis.services;
 
 import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
 import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
