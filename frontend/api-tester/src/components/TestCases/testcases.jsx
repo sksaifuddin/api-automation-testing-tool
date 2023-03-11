@@ -67,7 +67,6 @@ const TestCases = (props) => {
     ]);
     return (
         <Box>
-            <header style={{ textAlign: "center" }}>TEST CASES</header>
             <div style={{ textAlign: "center" }}>
                 <LoadingButton
                     variant="outlined"
@@ -78,7 +77,7 @@ const TestCases = (props) => {
                     Add Test Cases
                 </LoadingButton>
             </div>
-            <div style={{ height: "230px", overflow: "auto" }}>
+            <div style={{ height: "400px", overflow: "auto" }}>
                 <Table>
                     <TableHead>
                         <TableRow>
