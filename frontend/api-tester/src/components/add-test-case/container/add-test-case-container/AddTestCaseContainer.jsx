@@ -10,7 +10,7 @@ import { executeTestCase } from "../../../../services/executeTestCase";
 
 const AddTestCaseContainer = ({getTestCaseExecutionResult}) => {
   const [clientDBMetaData, setClientDBMetaData] = useState({});
-
+  const [btnLoader, setBtnLoader] = useState(false);
   let finalTestObject = {testCaseDetails: {}, columnValues: {}};
   useEffect(() => {
     getClientDBMetadata().then((data) => {
@@ -29,7 +29,11 @@ const AddTestCaseContainer = ({getTestCaseExecutionResult}) => {
   };
 
   const testCaseExecution = () => {
-    executeTestCase(finalTestObject).then((data) => getTestCaseExecutionResult(data))
+    setBtnLoader(true);
+    executeTestCase(finalTestObject).then((data) => {
+      getTestCaseExecutionResult(data);
+      setBtnLoader(false);
+    })
   }
 
   return (
@@ -50,7 +54,7 @@ const AddTestCaseContainer = ({getTestCaseExecutionResult}) => {
               <LoadingButton
                 size="large"
                 endIcon={<SendIcon />}
-                // loading={btnLoader}
+                loading={btnLoader}
                 loadingPosition="end"
                 variant="contained"
                 onClick={testCaseExecution}
