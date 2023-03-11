@@ -10,14 +10,45 @@ import {
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-function AddDeleteColumnTable() {
-  const [items, setItems] = useState([{ column: "", value: "" }]);
+function AddDeleteColumnTable({columns}) {
+  const [columnsNames, setColumnNames] = useState([])
+  const [items, setItems] = useState([{ columnName: "", expectedValue: "" }]);
   const handleAddRow = () => {
-    console.log("here in handle row");
-    setItems([...items, { column: "", value: "" }]);
+    setItems([...items, { columnName: "", expectedValue: "" }]);
   };
+  
+  useEffect(() => {
+    setColumnNames(columns.map(column => {
+      return Object.keys(column)[0]
+    })
+    )
+  
+  }, [columns])
+
+  const getColumnMenu = () => {
+    return columnsNames.map((column, index) => (
+      <MenuItem key={index} value={column}>{column}</MenuItem>
+    ))
+  }
+
+  const handleColumnNameSelected = (event) => {
+    const emptyItemIndex = items.findIndex((item) => item.columnName === "");
+    const objectTobeUpdated = items[emptyItemIndex];
+    objectTobeUpdated.columnName = event.target.value;
+    items[emptyItemIndex] = objectTobeUpdated;
+    setItems([...items]);
+  }
+
+  const handleColumnValueChange = (event, selectedItem) => {
+    const emptyItemIndex = items.findIndex((item) => item.columnName === selectedItem.columnName);
+    const objectTobeUpdated = items[emptyItemIndex];
+    objectTobeUpdated.expectedValue = event.target.value;
+    items[emptyItemIndex] = objectTobeUpdated;
+    setItems([...items]);
+  }
+
   return (
     <div>
       <Box>
@@ -31,14 +62,11 @@ function AddDeleteColumnTable() {
               <Select
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
-                // value={}
+                value={item.columnName}
                 label="Type *"
-                // onChange={handleChange}
+                onChange={handleColumnNameSelected}
               >
-                <MenuItem value={"GET"}>GET</MenuItem>
-                <MenuItem value={"POST"}>POST</MenuItem>
-                <MenuItem value={"PUT"}>PUT</MenuItem>
-                <MenuItem value={"DELETE"}>PUT</MenuItem>
+                {getColumnMenu()}
               </Select>
             </FormControl>
           </Grid>
@@ -46,9 +74,10 @@ function AddDeleteColumnTable() {
             <TextField
               width={200}
               required
-              // value={username}
+              disabled={!item.columnName}
+              value={item.expectedValue || undefined}
               label="value"
-              // onChange={(e) => setUsername(e.target.value)}
+              onBlur={(event) => handleColumnValueChange(event, item)}
             />
             {
                 index === items.length-1 && (

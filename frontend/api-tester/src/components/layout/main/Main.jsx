@@ -1,10 +1,13 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import TestOutput from "../../test-output/TestOutput/TestOutput";
+import AddTestCaseContainer from "../../add-test-case/container/add-test-case-container/AddTestCaseContainer";
 
 const main = (props) => {
     return <>
-        <Box sx={{ width: 1000, height:300, margin: 2 }}/>
+     
+        <Box/>
+        <AddTestCaseContainer></AddTestCaseContainer>
         <div>
            <TestOutput data={{
             "httpStatusCode": 200,

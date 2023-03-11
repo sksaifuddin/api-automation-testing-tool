@@ -20,8 +20,11 @@ function TestCaseDetails({ clientDBMetaData }) {
   };
 
   const getSelectedTableData = (selectedTableName)  => {
-      console.log('--->', selectedTableName);
-      
+     return Object.entries(clientDBMetaData).map((entry) => {
+        const [key, value] = entry;
+        if(key === selectedTableName) return {tableName: key, data: value};
+        return null;
+      }).filter(Boolean);
   }
 
   const handleSelectedTableChange = (event) => {
@@ -30,15 +33,8 @@ function TestCaseDetails({ clientDBMetaData }) {
     getSelectedTableData(selectedValue);
     setSelectedPrimaryKeyValue({ 
         value: selectedPrimaryKeyValue.value, 
-        key: Object.entries(clientDBMetaData).filter((entry) => {
-          const [key] = entry;
-          if(key === selectedValue) {
-            return true;
-          } 
-          return false;
-        }).map(data => data[1])[0].primaryKeyList[0]
+        key: getSelectedTableData(selectedValue)[0].data.primaryKeyList[0]
     });
-    // console.log('selected primarty key', selectedPrimaryKeyValue)
   }
 
   return (
@@ -90,7 +86,9 @@ function TestCaseDetails({ clientDBMetaData }) {
         </Grid>
         <Grid container>
           <Grid item xs={12}>
-            <AddDeleteColumnTable></AddDeleteColumnTable>
+            {
+              selectedTable && <AddDeleteColumnTable columns={getSelectedTableData(selectedTable)[0]?.data.columnsList}></AddDeleteColumnTable>
+            }
           </Grid>
         </Grid>
       </Box>
