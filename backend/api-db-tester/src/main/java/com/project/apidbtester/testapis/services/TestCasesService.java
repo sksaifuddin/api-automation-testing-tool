@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class GetTestCasesService {
-
-    @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
+public class TestCasesService {
 
     @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
