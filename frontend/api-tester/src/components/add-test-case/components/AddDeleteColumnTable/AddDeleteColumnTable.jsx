@@ -12,7 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import React, { useEffect, useState } from "react";
 
-function AddDeleteColumnTable({columns}) {
+function AddDeleteColumnTable({columns, getColumnValues}) {
   const [columnsNames, setColumnNames] = useState([])
   const [items, setItems] = useState([{ columnName: "", expectedValue: "" }]);
   const handleAddRow = () => {
@@ -39,6 +39,7 @@ function AddDeleteColumnTable({columns}) {
     objectTobeUpdated.columnName = event.target.value;
     items[emptyItemIndex] = objectTobeUpdated;
     setItems([...items]);
+    getColumnValues(items)
   }
 
   const handleColumnValueChange = (event, selectedItem) => {
@@ -47,6 +48,7 @@ function AddDeleteColumnTable({columns}) {
     objectTobeUpdated.expectedValue = event.target.value;
     items[emptyItemIndex] = objectTobeUpdated;
     setItems([...items]);
+    getColumnValues(items)
   }
 
   return (

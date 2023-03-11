@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Box,
@@ -11,9 +11,41 @@ import {
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import TestCaseDetails from "./TestCaseDetails";
 
+function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
+  const [testCaseDetails, setTestCaseDetails] = useState({
+    type: "",
+    url: "",
+    payload: "",
+    tableName: "",
+    primaryKeyName: "",
+    primaryKeyValue: null, // this should be a number,
+    columnValues: [],
+  });
 
-function AddTestCase({ clientDBMetaData }) {
-  
+  useEffect(() => {
+    getFinalTestObject(testCaseDetails);
+  }, [testCaseDetails, getFinalTestObject])
+
+  const handleTypeChange = (event) => {
+    setTestCaseDetails({ ...{ ...testCaseDetails, type: event.target.value } });
+  };
+
+  const handleURLChange = (event) => {
+    setTestCaseDetails({ ...{ ...testCaseDetails, url: event.target.value } });
+  };
+
+  const handlePayloadChange = (event) => {
+    setTestCaseDetails({
+      ...{ ...testCaseDetails, payload: event.target.value },
+    });
+  };
+
+  const getTestCaseDetails = (otherTestCaseDetails) => {
+    // console.log('test case details', testCaseDetails);
+    // setTestCaseDetails({...testCaseDetails, ...otherTestCaseDetails});
+    getFinalTestObject({...testCaseDetails, ...otherTestCaseDetails});
+  }
+
   return (
     <div>
       <Box>
@@ -26,14 +58,14 @@ function AddTestCase({ clientDBMetaData }) {
               <Select
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
-                // value={}
+                value={testCaseDetails.type || undefined}
                 label="Type *"
-                // onChange={handleChange}
+                onChange={handleTypeChange}
               >
-                <MenuItem value={"GET"}>GET</MenuItem>
-                <MenuItem value={"POST"}>POST</MenuItem>
-                <MenuItem value={"PUT"}>PUT</MenuItem>
-                <MenuItem value={"DELETE"}>PUT</MenuItem>
+                <MenuItem value={"get"}>GET</MenuItem>
+                <MenuItem value={"post"}>POST</MenuItem>
+                <MenuItem value={"put"}>PUT</MenuItem>
+                <MenuItem value={"delete"}>PUT</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -41,9 +73,9 @@ function AddTestCase({ clientDBMetaData }) {
             <TextField
               fullWidth
               required
-              // value={username}
+              value={testCaseDetails.url || undefined}
               label="URL"
-              // onChange={(e) => setUsername(e.target.value)}
+              onChange={handleURLChange}
             />
           </Grid>
         </Grid>
@@ -52,15 +84,24 @@ function AddTestCase({ clientDBMetaData }) {
           <Grid item xs={5}>
             <TextareaAutosize
               aria-label="minimum height"
-              minRows={27}
+              minRows={20}
+              value={testCaseDetails.payload || undefined}
+              onBlur={handlePayloadChange}
               placeholder="Payload Body"
               style={{ width: 400 }}
             />
           </Grid>
           <Grid item xs={7}>
-            <TestCaseDetails clientDBMetaData={{...clientDBMetaData}}></TestCaseDetails>
+            {testCaseDetails.type && (
+              <TestCaseDetails
+                getTestCaseDetails={getTestCaseDetails}
+                clientDBMetaData={{ ...clientDBMetaData }}
+              ></TestCaseDetails>
+            )}
           </Grid>
         </Grid>
+
+       
       </Box>
     </div>
   );
