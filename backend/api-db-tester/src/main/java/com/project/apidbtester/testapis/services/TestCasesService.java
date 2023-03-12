@@ -29,4 +29,13 @@ public class TestCasesService {
             throw new TestCasesApiException("Test case not found");
         }
     }
+
+    public String deleteTestCaseById(int id) throws TestCasesApiException {
+        try {
+            testCaseDetailsRepository.deleteById(id);
+            return "Test case deleted successfully";
+        } catch (Exception e) {
+            throw new TestCasesApiException("Test case not found to delete");
+        }
+    }
 }
