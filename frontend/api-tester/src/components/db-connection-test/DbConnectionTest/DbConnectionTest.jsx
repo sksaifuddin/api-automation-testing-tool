@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Grid, TextField } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import Snackbar from '@mui/material/Snackbar';
-import { testClientDBConnection } from "../../../services/DbTestService";
+import { getClientDBCredentials, testClientDBConnection } from "../../../services/DbTestService";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
@@ -18,6 +18,16 @@ const DbConnectionTest = (props) => {
     const [openSnackBar, setOpenSnackBar] = useState(false);
     const [testMessage, setTestMessage] = useState('');
     const [snackBarType, setSnackBarType] = useState('success');
+
+    useEffect(() => {
+        getClientDBCredentials().then((data) => {
+            const databaseDetails = data.data[0];
+            setUrl(databaseDetails.databaseUrl);
+            setPassword(databaseDetails.password);
+            setUsername(databaseDetails.userName);
+        });
+        
+    })
 
     async function testConnection() {
         setBtnLoader(true)
