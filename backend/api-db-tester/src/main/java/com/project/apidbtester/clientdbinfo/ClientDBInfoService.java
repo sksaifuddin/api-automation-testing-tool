@@ -32,6 +32,10 @@ public class ClientDBInfoService {
         }
     }
 
+    public List<ClientDBCredentialsEntity> fetchClientDBCredentials() throws ClientDBConnectionException {
+       return clientDBInfoRepository.findAll();
+    }
+
     public Map<String, ClientDBMetaData> fetchClientDBMetaData(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
         try {
             Class.forName(GlobalConstants.JDBC_DRIVER);
