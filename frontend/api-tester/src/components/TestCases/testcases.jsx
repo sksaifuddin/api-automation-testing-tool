@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import LoadingButton from '@mui/lab/LoadingButton';
 import AddIcon from '@mui/icons-material/Add';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,8 +9,17 @@ import TableRow from '@mui/material/TableRow';
 import TableHead from '@mui/material/TableHead';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { getAllTestCases } from "../../services/TestCasesService";
 
 const TestCases = (props) => {
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        getAllTestCases().then((data) => {
+            setData(data)
+        });
+    })
 
     function imagebutton(item) {
         if (item) {
@@ -20,51 +29,6 @@ const TestCases = (props) => {
         }
     }
 
-    const [dataa] = useState([
-
-        {
-            "id": "1",
-            "url": "abc",
-            "requestType": "get",
-            "isPass": true
-        },
-        {
-            "id": "2",
-            "url": "xyz",
-            "requestType": "post",
-            "isPass": false
-        },
-        {
-            "id": "3",
-            "url": "pqr",
-            "requestType": "put",
-            "isPass": true
-        },
-        {
-            "id": "4",
-            "url": "bcd",
-            "requestType": "get",
-            "isPass": false
-        },
-        {
-            "id": "5",
-            "url": "efg",
-            "requestType": "put",
-            "isPass": false
-        },
-        {
-            "id": "6",
-            "url": "ijk",
-            "requestType": "delete",
-            "isPass": true
-        },
-        {
-            "id": "7",
-            "url": "123",
-            "requestType": "get",
-            "isPass": true
-        }
-    ]);
     return (
         <Box>
             <div style={{ textAlign: "center" }}>
@@ -89,12 +53,12 @@ const TestCases = (props) => {
                     </TableHead>
 
                     <TableBody>
-                        {dataa.map((item, index) => (
+                        {data.map((item, index) => (
                             <TableRow key={item.id} hover role="checkbox" tabIndex={-1} >
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{item.requestType}</TableCell>
+                                <TableCell>{item.type}</TableCell>
                                 <TableCell>{item.url}</TableCell>
-                                <TableCell>{imagebutton(item.isPass)}</TableCell>
+                                <TableCell>{imagebutton(item.passed)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
