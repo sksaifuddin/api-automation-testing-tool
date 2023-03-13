@@ -1,7 +1,7 @@
 import React from "react";
 // eslint-disable-next-line no-unused-vars
 import style from './Sidebar.style.scss';
-import TestCases from "../../TestCases/Testcases";
+import TestCases from "../../TestCases/testcases";
 import DbConnectionTest from "../../db-connection-test/DbConnectionTest/DbConnectionTest";
 
 const Sidebar = (props) => {
