@@ -2,6 +2,7 @@ package com.project.apidbtester.testapis.utils;
 
 import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
 import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.entities.TestColumnValue;
 
@@ -20,9 +21,8 @@ public class ClientDBData {
 
             String primaryKey = "";
             while (resultSet.next()) {
-                primaryKey = resultSet.getString("COLUMN_NAME");
+                primaryKey = resultSet.getString(Constants.COLUMN_NAME);
             }
-            System.out.println("Primary key: " + primaryKey);
             return primaryKey;
         } catch (SQLException e) {
             throw new RuntimeException();
