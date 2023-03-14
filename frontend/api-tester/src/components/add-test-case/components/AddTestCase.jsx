@@ -64,7 +64,7 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
                 <MenuItem value={"get"}>GET</MenuItem>
                 <MenuItem value={"post"}>POST</MenuItem>
                 <MenuItem value={"put"}>PUT</MenuItem>
-                <MenuItem value={"delete"}>PUT</MenuItem>
+                <MenuItem value={"delete"}>DELETE</MenuItem>
               </Select>
             </FormControl>
           </Grid>
