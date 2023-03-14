@@ -1,4 +1,4 @@
-package com.project.apidbtester.clientdbinfo.dtos;
+package com.project.apidbtester.clientdb.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

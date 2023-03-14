@@ -1,7 +1,7 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
+import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
+import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.constants.GlobalConstants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;

@@ -1,6 +1,6 @@
 package com.project.apidbtester.testapis.controllers;
 
-import com.project.apidbtester.responses.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.testapis.services.DeleteApiService;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -9,14 +9,11 @@ import com.project.apidbtester.testapis.services.PostApiService;
 import com.project.apidbtester.testapis.services.PutApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class ApiController {
+public class TestApiController {
     @Autowired
     private PostApiService postApiService;
     @Autowired
@@ -27,7 +24,7 @@ public class ApiController {
     private GetApiService getApiService;
 
     @PostMapping("/test")
-    public TestResponse fetchTestResult(@RequestBody TestInput testInput) throws ClientDBConnectionException {
+    public TestResponse fetchTestResult(@RequestBody TestInput testInput) throws ClientDBInfoService.ClientDBConnectionException {
         switch (testInput.getTestCaseDetails().getType().toUpperCase()) {
             case "POST":
                 return postApiService.fetchTestResult(testInput);

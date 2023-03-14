@@ -1,4 +1,4 @@
-package com.project.apidbtester.clientdbinfo;
+package com.project.apidbtester.clientdb;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

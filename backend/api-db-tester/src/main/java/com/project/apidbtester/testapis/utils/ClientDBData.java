@@ -1,14 +1,9 @@
 package com.project.apidbtester.testapis.utils;
 
-import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.testapis.constants.Constants;
-import com.project.apidbtester.testapis.entities.TestCaseDetails;
-import com.project.apidbtester.testapis.entities.TestColumnValue;
 
-import javax.sql.rowset.CachedRowSet;
 import java.sql.*;
-import java.util.List;
 
 public class ClientDBData {
 

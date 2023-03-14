@@ -1,15 +1,10 @@
-package com.project.apidbtester.clientdbinfo;
+package com.project.apidbtester.clientdb;
 
-import com.project.apidbtester.clientdbinfo.constants.Constants;
-import com.project.apidbtester.clientdbinfo.dtos.ClientDBMetaData;
+import com.project.apidbtester.clientdb.constants.Constants;
+import com.project.apidbtester.clientdb.dtos.ClientDBMetaData;
 import com.project.apidbtester.constants.GlobalConstants;
-import com.project.apidbtester.responses.ClientDBConnectionException;
-
-import com.project.apidbtester.responses.dtos.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.sql.*;
 import java.util.*;
 
@@ -19,27 +14,25 @@ public class ClientDBInfoService {
     @Autowired
     private ClientDBInfoRepository clientDBInfoRepository;
 
-    public ApiResponse testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
+    public String  testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) {
         try {
             Class.forName(GlobalConstants.JDBC_DRIVER);
             DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
             clientDBCredentialsEntity.setDatabaseId(GlobalConstants.DB_CREDENTIALS_ID);
             clientDBInfoRepository.save(clientDBCredentialsEntity);
-            ApiResponse successResponse = new ApiResponse(HttpStatus.valueOf(200), "DB Connection Successful", 200);
-            return successResponse;
+            return Constants.CLIENT_DB_CONNECTION_SUCCESSFUL;
         } catch (Exception e) {
             throw new ClientDBConnectionException();
         }
     }
 
-    public List<ClientDBCredentialsEntity> fetchClientDBCredentials() throws ClientDBConnectionException {
-       return clientDBInfoRepository.findAll();
+    public ClientDBCredentialsEntity getClientDBCredentials() throws ClientDBCredentialsNotFoundException {
+        return clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow(()-> new ClientDBCredentialsNotFoundException());
     }
 
-    public Map<String, ClientDBMetaData> fetchClientDBMetaData(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
+    public Map<String, ClientDBMetaData> fetchClientDBMetaData() {
         try {
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
+            Connection connection = getClientDBCConnection();
             Statement statement = connection.createStatement();
 
             Map<String, ClientDBMetaData> map = new HashMap<>();
@@ -86,4 +79,25 @@ public class ClientDBInfoService {
         }
     }
 
+    public Connection getClientDBCConnection() {
+        try {
+            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow(() -> new ClientDBConnectionException());
+            Class.forName(GlobalConstants.JDBC_DRIVER);
+            return DriverManager.getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
+        } catch (Exception e) {
+            throw new ClientDBConnectionException();
+        }
+    }
+
+    public static class ClientDBConnectionException extends RuntimeException {
+        public ClientDBConnectionException() {
+            super("Connection to client db failed, please check the details again");
+        }
+    }
+
+    public static class ClientDBCredentialsNotFoundException extends RuntimeException {
+        public ClientDBCredentialsNotFoundException() {
+            super("Connection to client db failed, please check the details again");
+        }
+    }
 }

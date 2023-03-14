@@ -1,8 +1,5 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
-import com.project.apidbtester.constants.GlobalConstants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
@@ -10,15 +7,12 @@ import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.entities.TestColumnValue;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.dtos.TestInput;
-import com.project.apidbtester.testapis.utils.ClientDBData;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.net.ConnectException;
-import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,8 +20,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
-import javax.sql.rowset.CachedRowSet;
 
 @Service
 public class GetApiService {
