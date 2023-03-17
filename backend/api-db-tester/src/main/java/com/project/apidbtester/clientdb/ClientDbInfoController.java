@@ -19,7 +19,11 @@ public class ClientDbInfoController {
 
     @GetMapping("/test-client-db-connection")
     public ResponseEntity<TestClientConnectionResponse> testClientDBConnection(@RequestBody ClientDBCredentialsEntity clientDBCredentialsEntity) {
-        TestClientConnectionResponse testClientConnectionResponse = TestClientConnectionResponse.builder().message(clientDBInfoService.testClientDBConnection(clientDBCredentialsEntity)).build();
+        String connectionMessage = clientDBInfoService.testClientDBConnection(clientDBCredentialsEntity);
+        TestClientConnectionResponse testClientConnectionResponse = TestClientConnectionResponse
+                .builder()
+                .message(connectionMessage)
+                .build();
         return ResponseEntity.ok(testClientConnectionResponse);
     }
 

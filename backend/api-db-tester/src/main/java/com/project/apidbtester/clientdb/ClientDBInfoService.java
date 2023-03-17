@@ -93,13 +93,13 @@ public class ClientDBInfoService {
 
     public static class ClientDBConnectionException extends RuntimeException {
         public ClientDBConnectionException() {
-            super("Connection to client db failed, please check the details again");
+            super(Constants.CLIENT_DB_CONNECTION_FAIL);
         }
     }
 
     public static class ClientDBCredentialsNotFoundException extends RuntimeException {
         public ClientDBCredentialsNotFoundException() {
-            super("Connection to client db failed, please check the details again");
+            super(Constants.CLIENT_DB_CREDENTIALS_NOT_FOUND);
         }
     }
 }
