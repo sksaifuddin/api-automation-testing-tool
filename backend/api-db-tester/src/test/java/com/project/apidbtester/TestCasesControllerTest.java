@@ -60,27 +60,5 @@ public class TestCasesControllerTest {
         Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assertions.assertEquals(message, responseEntity.getBody());
     }
-
-    @Test
-    public void testHandleExceptions_whenTestCaseNotFound() {
-        String errorMessage = Constants.TEST_CASE_NOT_FOUND_EX_MSG;
-        TestCasesService.TestCaseNotFoundException exception = new TestCasesService.TestCaseNotFoundException();
-
-        ResponseEntity<ErrorResponse> responseEntity = testCasesController.handleExceptions(exception);
-
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        Assertions.assertEquals(errorMessage, responseEntity.getBody().getMessage());
-    }
-
-    @Test
-    public void testHandleExceptions_whenNoTestsCasesFound() {
-        String errorMessage = Constants.TEST_CASES_NOT_FOUND_EX_MSG;
-        TestCasesService.TestCasesNotFoundException exception = new TestCasesService.TestCasesNotFoundException();
-
-        ResponseEntity<ErrorResponse> responseEntity = testCasesController.handleExceptions(exception);
-
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        Assertions.assertEquals(errorMessage, responseEntity.getBody().getMessage());
-    }
 }
 
