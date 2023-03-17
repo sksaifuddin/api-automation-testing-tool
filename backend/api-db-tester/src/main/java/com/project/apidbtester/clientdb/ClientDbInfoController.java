@@ -36,17 +36,4 @@ public class ClientDbInfoController {
     public ResponseEntity<ClientDBCredentialsEntity> getClientDBCredentials() {
         return ResponseEntity.ok(clientDBInfoService.getClientDBCredentials());
     }
-
-    @ExceptionHandler({
-            ClientDBInfoService.ClientDBConnectionException.class,
-            ClientDBInfoService.ClientDBCredentialsNotFoundException.class
-    })
-    public ResponseEntity<ErrorResponse> handleExceptions(RuntimeException e) {
-        ErrorResponse message = ErrorResponse.builder().message(e.getMessage()).build();
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        return ResponseEntity.status(httpStatus).body(message);
-    }
 }

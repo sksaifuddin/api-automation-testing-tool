@@ -27,7 +27,7 @@ public class ClientDBInfoService {
         }
     }
 
-    public ClientDBCredentialsEntity getClientDBCredentials() throws ClientDBCredentialsNotFoundException {
+    public ClientDBCredentialsEntity getClientDBCredentials() {
         return clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow(()-> new ClientDBCredentialsNotFoundException());
     }
 
@@ -83,10 +83,13 @@ public class ClientDBInfoService {
 
     public Connection getClientDBCConnection() {
         try {
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow(() -> new ClientDBConnectionException());
+            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow(() -> new ClientDBCredentialsNotFoundException());
             Class.forName(GlobalConstants.JDBC_DRIVER);
             return DriverManager.getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
         } catch (Exception e) {
+            if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
+            }
             throw new ClientDBConnectionException();
         }
     }

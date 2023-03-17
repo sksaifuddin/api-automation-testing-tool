@@ -31,14 +31,4 @@ public class TestCasesController {
     public ResponseEntity<String> deleteTestCaseById(@PathVariable int id) {
         return ResponseEntity.ok(testCasesService.deleteTestCaseById(id));
     }
-
-    @ExceptionHandler({
-            TestCasesService.TestCaseNotFoundException.class,
-            TestCasesService.TestCasesNotFoundException.class
-    })
-    public ResponseEntity<ErrorResponse> handleExceptions(RuntimeException e) {
-        ErrorResponse message = ErrorResponse.builder().message(e.getMessage()).build();
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        return ResponseEntity.status(httpStatus).body(message);
-    }
 }

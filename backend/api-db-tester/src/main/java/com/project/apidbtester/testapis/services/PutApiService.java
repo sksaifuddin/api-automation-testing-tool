@@ -1,8 +1,8 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.clientdb.ClientDBInfoRepository;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
@@ -40,6 +40,9 @@ public class PutApiService {
     private ColumnValueRepository columnValueRepository;
 
     @Autowired
+    private ClientDBInfoService clientDBInfoService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     public TestResponse fetchTestResult(TestInput testInput) {
@@ -47,7 +50,6 @@ public class PutApiService {
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
         List<TestColumnValue> testColumnValues = testInput.getColumnValues();
         TestResponse testResponse = new TestResponse();
-//        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
             Response r = TestRequest.sendRequest(testCaseDetails);
@@ -65,11 +67,7 @@ public class PutApiService {
                 return testResponse;
             }
 
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
-
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager
-                    .getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
+            Connection connection = clientDBInfoService.getClientDBCConnection();
 
             Statement statement = connection.createStatement();
 
@@ -106,13 +104,13 @@ public class PutApiService {
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Unable to call api");
-            } else {
-                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
+                testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+                testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
+                return testResponse;
+            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
+                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
             }
-            return testResponse;
+            throw new ClientDBInfoService.ClientDBConnectionException();
         }
     }
 }

@@ -1,14 +1,17 @@
 package com.project.apidbtester.testapis.controllers;
 
-import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.testapis.constants.ApiRequestType;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.services.DeleteApiService;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.services.GetApiService;
 import com.project.apidbtester.testapis.services.PostApiService;
 import com.project.apidbtester.testapis.services.PutApiService;
+import com.project.apidbtester.utils.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,21 +27,31 @@ public class TestApiController {
     private GetApiService getApiService;
 
     @PostMapping("/test")
-    public TestResponse fetchTestResult(@RequestBody TestInput testInput) throws ClientDBInfoService.ClientDBConnectionException {
-        switch (testInput.getTestCaseDetails().getType().toUpperCase()) {
-            case "POST":
-                return postApiService.fetchTestResult(testInput);
-            case "PUT":
-                return putApiService.fetchTestResult(testInput);
-            case "DELETE":
-                return deleteApiService.fetchTestResult(testInput);
-            case "GET":
-                return getApiService.fetchTestResult(testInput);
-            default:
-                TestResponse testResponse = new TestResponse();
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Invalid request type");
-                return testResponse;
+    public ResponseEntity<TestResponse> fetchTestResult(@RequestBody TestInput testInput) {
+        String inputRequestType = testInput.getTestCaseDetails().getType();
+        try {
+            ApiRequestType apiRequestType = ApiRequestType.valueOf(inputRequestType.toUpperCase());
+
+            switch (apiRequestType) {
+                case POST:
+                    return ResponseEntity.ok(postApiService.fetchTestResult(testInput));
+                case PUT:
+                    return ResponseEntity.ok(putApiService.fetchTestResult(testInput));
+                case DELETE:
+                    return ResponseEntity.ok(deleteApiService.fetchTestResult(testInput));
+                case GET:
+                    return ResponseEntity.ok(getApiService.fetchTestResult(testInput));
+                default:
+                    throw new InvalidRequestTypeException();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestTypeException();
+        }
+    }
+
+    public static class InvalidRequestTypeException extends RuntimeException {
+        public InvalidRequestTypeException() {
+            super(Constants.INVALID_API_REQUEST_TYPE);
         }
     }
 }
