@@ -1,0 +1,44 @@
+package com.project.apidbtester.testapis.controllers;
+
+import com.project.apidbtester.testapis.entities.TestCaseDetails;
+import com.project.apidbtester.testapis.services.TestCasesService;
+import com.project.apidbtester.utils.ErrorResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class TestCasesController {
+
+    @Autowired
+    private TestCasesService testCasesService;
+
+    @GetMapping("/testcases/get")
+    public ResponseEntity<List<TestCaseDetails>> fetchAllTestCases() {
+        return ResponseEntity.ok(testCasesService.fetchAllTestCases());
+    }
+
+    @GetMapping("/testcases/get/{id}")
+    public ResponseEntity<TestCaseDetails> fetchTestCaseById(@PathVariable int id) {
+        return ResponseEntity.ok(testCasesService.fetchTestCaseById(id));
+    }
+
+    @DeleteMapping("/testcases/delete/{id}")
+    public ResponseEntity<String> deleteTestCaseById(@PathVariable int id) {
+        return ResponseEntity.ok(testCasesService.deleteTestCaseById(id));
+    }
+
+    @ExceptionHandler({
+            TestCasesService.TestCaseNotFoundException.class,
+            TestCasesService.TestCasesNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleExceptions(RuntimeException e) {
+        ErrorResponse message = ErrorResponse.builder().message(e.getMessage()).build();
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(httpStatus).body(message);
+    }
+}
