@@ -3,6 +3,7 @@ package com.project.apidbtester.clientdb;
 import com.project.apidbtester.clientdb.constants.Constants;
 import com.project.apidbtester.clientdb.dtos.ClientDBMetaData;
 import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.*;
@@ -14,7 +15,7 @@ public class ClientDBInfoService {
     @Autowired
     private ClientDBInfoRepository clientDBInfoRepository;
 
-    public String  testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) {
+    public String testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) {
         try {
             Class.forName(GlobalConstants.JDBC_DRIVER);
             DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
@@ -57,7 +58,8 @@ public class ClientDBInfoService {
                     }
 
                     Statement statementCols = connection.createStatement();
-                    ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
+                    String query = Query.generateSelectQuery(tableName);
+                    ResultSet resultSetColumns = statementCols.executeQuery(query);
                     ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
                     int colCount = resultSetMetaDataCols.getColumnCount();
                     List<Map<String, String>> columnsList= new ArrayList<>();

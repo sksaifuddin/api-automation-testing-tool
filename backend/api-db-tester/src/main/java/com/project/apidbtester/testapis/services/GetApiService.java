@@ -7,12 +7,14 @@ import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.entities.TestColumnValue;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.dtos.TestInput;
+import com.project.apidbtester.utils.TestRequest;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,10 +43,9 @@ public class GetApiService {
 //        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
-            RequestSpecification request = RestAssured.given();
-            request.contentType(ContentType.JSON);
-            request.baseUri(testCaseDetails.getUrl());
-            Response r = request.get();
+            Response r = TestRequest.sendRequest(testCaseDetails);
+            if (r == null) throw new ConnectException();
+
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 

@@ -1,4 +1,4 @@
-package com.project.apidbtester.testapis.utils;
+package com.project.apidbtester.utils;
 
 import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.testapis.constants.Constants;

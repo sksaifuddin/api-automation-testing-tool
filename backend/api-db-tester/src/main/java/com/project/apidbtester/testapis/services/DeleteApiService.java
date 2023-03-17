@@ -7,6 +7,8 @@ import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
+import com.project.apidbtester.utils.Query;
+import com.project.apidbtester.utils.TestRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -31,14 +33,13 @@ public class DeleteApiService {
     public TestResponse fetchTestResult(TestInput testInput) {
 
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
+        testCaseDetails.setPayload("");
         TestResponse testResponse = new TestResponse();
 
         try {
-            RequestSpecification request = RestAssured.given();
-            request.contentType(ContentType.JSON);
-            request.baseUri(testCaseDetails.getUrl());
-            request.body("");
-            Response r = request.delete();
+            Response r = TestRequest.sendRequest(testCaseDetails);
+            if (r == null) throw new ConnectException();
+
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
@@ -59,15 +60,7 @@ public class DeleteApiService {
 
             Statement statement = connection.createStatement();
 
-            StringBuilder query = new StringBuilder("select count(*)");
-
-            query.append(" from ")
-                    .append(testCaseDetails.getTableName())
-                    .append(" where ")
-                    .append(testCaseDetails.getPrimaryKeyName())
-                    .append(" = ")
-                    .append(testCaseDetails.getPrimaryKeyValue())
-                    .append(";");
+            String query = Query.generateCountQueryWithWhereClause(testCaseDetails);
 
             ResultSet result = statement.executeQuery(String.valueOf(query));
             result.next();
