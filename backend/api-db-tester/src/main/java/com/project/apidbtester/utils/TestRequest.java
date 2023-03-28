@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import java.net.ConnectException;
 import java.util.List;
 
-public record TestRequest() {
+public class TestRequest {
 
-    public static Response sendRequest(TestCaseDetails testCaseDetails) {
+    public Response sendRequest(TestCaseDetails testCaseDetails) {
         try {
             RequestSpecification request = RestAssured.given();
             request.contentType(ContentType.JSON);

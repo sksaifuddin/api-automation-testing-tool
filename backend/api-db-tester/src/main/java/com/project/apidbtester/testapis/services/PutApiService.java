@@ -22,10 +22,7 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Service
 public class PutApiService {
@@ -45,6 +42,8 @@ public class PutApiService {
     @Autowired
     private ModelMapper modelMapper;
 
+    private TestRequest testRequest = new TestRequest();
+
     public TestResponse fetchTestResult(TestInput testInput) {
 
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
@@ -52,7 +51,7 @@ public class PutApiService {
         TestResponse testResponse = new TestResponse();
 
         try {
-            Response r = TestRequest.sendRequest(testCaseDetails);
+            Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
             testResponse.setHttpStatusCode(r.statusCode());

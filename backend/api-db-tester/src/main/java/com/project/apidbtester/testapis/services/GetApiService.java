@@ -43,7 +43,8 @@ public class GetApiService {
 //        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
-            Response r = TestRequest.sendRequest(testCaseDetails);
+            TestRequest testRequest = new TestRequest();
+            Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
             testResponse.setHttpStatusCode(r.statusCode());
