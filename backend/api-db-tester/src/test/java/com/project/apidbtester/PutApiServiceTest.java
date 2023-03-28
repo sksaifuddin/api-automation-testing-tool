@@ -142,6 +142,19 @@ class PutApiServiceTest {
 		assertEquals(testResponse.getHttpErrorMsg(), HttpStatus.NOT_FOUND.toString());
 		assertFalse(testResponse.getAllTestPassed());
 	}
-	
+
+	@Test
+	void testFetchTestResult_ClientDBConnectionException() throws Exception {
+		TestInput testInput = new TestInput();
+		testInput.setTestCaseDetails(testCaseDetails);
+
+		doReturn(HttpStatus.OK.value()).when(response).statusCode();
+		doReturn(response).when(testRequest).sendRequest(testCaseDetails);
+		Connection connection = mock(Connection.class);
+		when(clientDBInfoService.getClientDBCConnection()).thenReturn(null);
+
+		assertThrows(ClientDBInfoService.ClientDBConnectionException.class, () -> putApiService.fetchTestResult(testInput));
+	}
+
 }
 
