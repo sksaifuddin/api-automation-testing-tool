@@ -59,9 +59,8 @@ public class PutApiService {
 
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
-                testResponse.setHttpErrorMsg(r.body().print());
                 testCaseDetails.setPassed(false);
-                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetails.setHttpErrorMsg(r.statusLine());
                 testCaseDetailsRepository.save(testCaseDetails);
                 return testResponse;
             }

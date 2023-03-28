@@ -63,30 +63,16 @@ class PutApiServiceTest {
 	TestRequest testRequest;
 
 	@Test
-	void fetchTestResultAllTestPassed() throws Exception {
+	void testFetchTestResult_AllTestPassed() throws Exception {
 		TestInput testInput = new TestInput();
-//		TestCaseDetails testCaseDetails = new TestCaseDetails();
-		String url = "http://localhost:9191/updateProducer";
-//		testCaseDetails.setUrl(url);
-//		testCaseDetails.setType("PUT");
-//		testCaseDetails.set("{\"Content-type\": \"application/json\"}");
-//		String payload = "{\"id\": 358, \"first_name\":\"shubham\",\"last_name\":\"mishra\",\"gender\":\"m\",\"film_count\":25}";
-//		testCaseDetails.setPayload(payload);
 		testInput.setTestCaseDetails(testCaseDetails);
 		TestColumnValue testColumnValue = new TestColumnValue();
 		testColumnValue.setColumnName("first_name");
 		testColumnValue.setExpectedValue("shubham");
 		testInput.setColumnValues(Arrays.asList(testColumnValue));
-//		Response response = RestAssured.given()
-//				.contentType("application/json")
-//				.body(payload)
-//				.put(url);
-//		when(TestRequest.sendRequest(testCaseDetails)).thenReturn(response);
-//		TestRequest
-//		Response r =
+
 		doReturn(HttpStatus.OK.value()).when(response).statusCode();
 		doReturn(response).when(testRequest).sendRequest(testCaseDetails);
-
 		when(modelMapper.map(eq(Arrays.asList(testColumnValue)), eq(ColumnResult[].class))).thenReturn(new ColumnResult[]{new ColumnResult("first_name", "shubham", "shubham", true)});
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
@@ -97,10 +83,65 @@ class PutApiServiceTest {
 		when(resultSet.next()).thenReturn(true, false);
 		when(resultSet.getString("first_name")).thenReturn("shubham");
 		TestResponse testResponse = putApiService.fetchTestResult(testInput);
+
 		assertTrue(testResponse.getAllTestPassed());
 		verify(testCaseDetailsRepository, times(1)).save(any());
 		verify(columnValueRepository, times(1)).save(any());
 	}
 
+	@Test
+	void testFetchTestResult_SomeTestsFailed() throws Exception {
+		TestInput testInput = new TestInput();
+		testInput.setTestCaseDetails(testCaseDetails);
+		TestColumnValue testColumnValue = new TestColumnValue();
+		testColumnValue.setColumnName("first_name");
+		testColumnValue.setExpectedValue("shubham");
+		testInput.setColumnValues(Arrays.asList(testColumnValue));
+
+		doReturn(HttpStatus.OK.value()).when(response).statusCode();
+		doReturn(response).when(testRequest).sendRequest(testCaseDetails);
+		when(modelMapper.map(eq(Arrays.asList(testColumnValue)), eq(ColumnResult[].class))).thenReturn(new ColumnResult[]{new ColumnResult("first_name", "shubham", "saif", false)});
+		Connection connection = mock(Connection.class);
+		Statement statement = mock(Statement.class);
+		ResultSet resultSet = mock(ResultSet.class);
+		when(clientDBInfoService.getClientDBCConnection()).thenReturn(connection);
+		when(connection.createStatement()).thenReturn(statement);
+		when(statement.executeQuery(any())).thenReturn(resultSet);
+		when(resultSet.next()).thenReturn(true, false);
+		when(resultSet.getString("first_name")).thenReturn("saif");
+		TestResponse testResponse = putApiService.fetchTestResult(testInput);
+
+		assertFalse(testResponse.getAllTestPassed());
+		verify(testCaseDetailsRepository, times(1)).save(any());
+		verify(columnValueRepository, times(1)).save(any());
+	}
+
+	@Test
+	void testFetchTestResult_ConnectException() {
+		TestInput testInput = new TestInput();
+		testInput.setTestCaseDetails(testCaseDetails);
+		doReturn(null).when(testRequest).sendRequest(testCaseDetails);
+
+		TestResponse testResponse = putApiService.fetchTestResult(testInput);
+
+		assertEquals(testResponse.getHttpStatusCode(), HttpStatus.SERVICE_UNAVAILABLE.value());
+		assertFalse(testResponse.getAllTestPassed());
+	}
+
+	@Test
+	void testFetchTestResult_ClientAPIErrorResponse() throws Exception {
+		TestInput testInput = new TestInput();
+		testInput.setTestCaseDetails(testCaseDetails);
+
+		doReturn(HttpStatus.NOT_FOUND.value()).when(response).statusCode();
+		doReturn(HttpStatus.NOT_FOUND.toString()).when(response).statusLine();
+		doReturn(response).when(testRequest).sendRequest(testCaseDetails);
+
+		TestResponse testResponse = putApiService.fetchTestResult(testInput);
+
+		assertEquals(testResponse.getHttpErrorMsg(), HttpStatus.NOT_FOUND.toString());
+		assertFalse(testResponse.getAllTestPassed());
+	}
+	
 }
 
