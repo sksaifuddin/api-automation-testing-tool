@@ -7,10 +7,8 @@ import java.sql.*;
 
 public class ClientDBData {
 
-    public static String getPrimaryKey(String tableName, ClientDBCredentialsEntity clientDBCredentials) {
-        try (Connection connection = DriverManager.getConnection(clientDBCredentials.getDatabaseUrl(),
-                clientDBCredentials.getUserName(),
-                clientDBCredentials.getPassword())) {
+    public String getPrimaryKey(String tableName, Connection connection) {
+        try {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet resultSet = databaseMetaData.getPrimaryKeys(null, null, tableName);
 

@@ -2,7 +2,9 @@ package com.project.apidbtester.testapis.services;
 
 import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.clientdb.ClientDBInfoRepository;
+import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
@@ -33,26 +35,27 @@ import io.restassured.specification.RequestSpecification;
 public class PostApiService {
 
     @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
-
-    @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
 
     @Autowired
     private ColumnValueRepository columnValueRepository;
 
     @Autowired
+    private ClientDBInfoService clientDBInfoService;
+
+    @Autowired
     private ModelMapper modelMapper;
+
+    private TestRequest testRequest = new TestRequest();
+    private ClientDBData clientDBData = new ClientDBData();
 
     public TestResponse fetchTestResult(TestInput testInput) {
 
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
         List<TestColumnValue> testColumnValues = testInput.getColumnValues();
         TestResponse testResponse = new TestResponse();
-//        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
-            TestRequest testRequest = new TestRequest();
             Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
@@ -61,27 +64,22 @@ public class PostApiService {
 
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
-                testResponse.setHttpErrorMsg(r.body().print());
                 testCaseDetails.setPassed(false);
-                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetails.setHttpErrorMsg(r.statusLine());
                 testCaseDetailsRepository.save(testCaseDetails);
                 return testResponse;
             }
 
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
+            Connection connection = clientDBInfoService.getClientDBCConnection();
 
             String tableName = testCaseDetails.getTableName();
             JSONObject jsonObject = new JSONObject(r.asString());
 
-            String primaryKeyName = ClientDBData.getPrimaryKey(tableName, clientDBCredentials);
+            String primaryKeyName = clientDBData.getPrimaryKey(tableName, connection);
             String primaryKeyValue = String.valueOf(jsonObject.get(primaryKeyName));
 
             testCaseDetails.setPrimaryKeyName(primaryKeyName);
             testCaseDetails.setPrimaryKeyValue(primaryKeyValue);
-
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager
-                    .getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
 
             Statement statement = connection.createStatement();
 
@@ -118,13 +116,13 @@ public class PostApiService {
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Unable to call api");
-            } else {
-                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
+                testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+                testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
+                return testResponse;
+            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
+                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
             }
-            return testResponse;
+            throw new ClientDBInfoService.ClientDBConnectionException();
         }
     }
 }
