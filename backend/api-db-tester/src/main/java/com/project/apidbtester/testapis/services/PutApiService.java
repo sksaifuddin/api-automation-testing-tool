@@ -28,9 +28,6 @@ import io.restassured.response.Response;
 public class PutApiService {
 
     @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
-
-    @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
 
     @Autowired

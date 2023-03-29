@@ -2,7 +2,9 @@ package com.project.apidbtester.testapis.services;
 
 import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.clientdb.ClientDBInfoRepository;
+import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
@@ -24,11 +26,14 @@ import java.sql.Statement;
 
 @Service
 public class DeleteApiService {
-    @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
 
     @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
+
+    @Autowired
+    private ClientDBInfoService clientDBInfoService;
+
+    private TestRequest testRequest = new TestRequest();
 
     public TestResponse fetchTestResult(TestInput testInput) {
 
@@ -37,7 +42,6 @@ public class DeleteApiService {
         TestResponse testResponse = new TestResponse();
 
         try {
-            TestRequest testRequest = new TestRequest();
             Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
@@ -46,24 +50,19 @@ public class DeleteApiService {
 
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
-                testResponse.setHttpErrorMsg(r.body().print());
                 testCaseDetails.setPassed(false);
-                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetails.setHttpErrorMsg(r.statusLine());
                 testCaseDetailsRepository.save(testCaseDetails);
                 return testResponse;
             }
 
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
-
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager
-                    .getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
+            Connection connection = clientDBInfoService.getClientDBCConnection();
 
             Statement statement = connection.createStatement();
 
             String query = Query.generateCountQueryWithWhereClause(testCaseDetails);
 
-            ResultSet result = statement.executeQuery(String.valueOf(query));
+            ResultSet result = statement.executeQuery(query);
             result.next();
             boolean testPassed = false;
 
@@ -80,13 +79,13 @@ public class DeleteApiService {
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Unable to call api");
-            } else {
-                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                testResponse.setHttpErrorMsg(e.getMessage());
+                testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+                testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
+                return testResponse;
+            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
+                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
             }
-            return testResponse;
+            throw new ClientDBInfoService.ClientDBConnectionException();
         }
     }
 }
