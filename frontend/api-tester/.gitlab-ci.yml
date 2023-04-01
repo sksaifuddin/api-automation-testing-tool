@@ -29,7 +29,7 @@ deploy:
     - echo "React deploy started"
     - eval $(ssh-agent -s)
     - chmod og-rwx ${DEPLOYMENT_PRIVATE_KEY}
-    - ssh -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" $USERNAME@$HOST -p echo "Logged in"
+    - ssh -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" $USERNAME@$HOST -p $PORT echo "Logged in"
     # - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/home"
   only:
     - setup-pipeline
