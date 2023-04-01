@@ -1,0 +1,11 @@
+stages:
+  - frontend_pipeline
+
+frontend:
+  stage: frontend_pipeline
+  trigger:
+    include:
+      - local: frontend/api-tester/.gitlab-ci.yml
+  rules:
+    - changes:
+      - frontend/api-tester/*
