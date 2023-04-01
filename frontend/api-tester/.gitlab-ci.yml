@@ -1,0 +1,35 @@
+default:
+  tags:
+    - group16-runner
+
+variables:
+  USERNAME: csci5308vm16
+  HOST: csci5308vm16.research.cs.dal.ca
+  PORT: 22
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: node:16
+  script:
+   - cd frontend/api-tester
+   - npm install
+   - npm run build
+  artifacts:
+    paths:
+    # have to check about this path
+      - frontend/api-tester/build/
+
+deploy:
+  stage: deploy
+  script:
+    - echo "React deploy started"
+    - eval $(ssh-agent -s)
+    - chmod og-rwx ${DEPLOYMENT_PRIVATE_KEY}
+    - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/ "$USERNAME@$HOST:/home"
+  only:
+    - setup-pipeline
+  
