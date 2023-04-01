@@ -1,4 +1,4 @@
-package com.project.apidbtester.clientdb.exceptions;
+package com.project.apidbtester.exceptions;
 
 import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.testapis.controllers.TestApiController;
