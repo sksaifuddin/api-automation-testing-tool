@@ -4,7 +4,7 @@ default:
 
 variables:
   USERNAME: csci5308vm16
-  HOST: csci5308-16
+  HOST: csci5308vm16.research.cs.dal.ca
   PORT: 22
 
 stages:
@@ -30,7 +30,7 @@ deploy:
     - echo "deployment-key:${DEPLOYMENT_PRIVATE_KEY}"
     - eval $(ssh-agent -s)
     - chmod og-rwx ${DEPLOYMENT_PRIVATE_KEY}
-    - ssh -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" $USERNAME@$HOST
+    - ssh -o StrictHostKeyChecking=no -i ${DEPLOYMENT_PRIVATE_KEY} csci5308vm16@csci5308vm16.research.cs.dal.ca "echo 'Hello, world!'"
     # - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/home"
   only:
     - setup-pipeline
