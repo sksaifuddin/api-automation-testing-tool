@@ -1,7 +1,7 @@
 default:
   image: node:16
   tags:
-    - deployment-runner
+    - deploymentrunner
 
 variables:
   USERNAME: csci5308vm16
