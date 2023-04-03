@@ -12,17 +12,17 @@ stages:
   # - build
   - deploy
 
-# build:
-#   stage: build
-#   image: node:16
-#   script:
-#    - cd frontend/api-tester
-#    - npm install
-#    - npm run build
-#   artifacts:
-#     paths:
-#     # have to check about this path
-#       - frontend/api-tester/build/
+build:
+  stage: build
+  image: node:16
+  script:
+   - cd frontend/api-tester
+   - npm install
+   - npm run build
+  artifacts:
+    paths:
+    # have to check about this path
+      - frontend/api-tester/build/
 
 deploy:
   stage: deploy
@@ -31,8 +31,8 @@ deploy:
     - echo "deployment-key:${DEPLOYMENT_PRIVATE_KEY}"
     - eval $(ssh-agent -s)
     - chmod og-rwx ${DEPLOYMENT_PRIVATE_KEY}
-    - ssh -o StrictHostKeyChecking=no -i ${DEPLOYMENT_PRIVATE_KEY} 'csci5308vm16@csci5308vm16.research.cs.dal.ca' "echo 'Hello, world!'"
-    # - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/home"
+    - ssh -o StrictHostKeyChecking=no -i ${DEPLOYMENT_PRIVATE_KEY} 'csci5308vm16@csci5308vm16.research.cs.dal.ca' "echo 'ssh connection success'"
+    - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/home/csci5308vm16/frontend/"
   only:
     - setup-pipeline
   
