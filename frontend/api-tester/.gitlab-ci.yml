@@ -9,7 +9,7 @@ variables:
   PORT: 22
 
 stages:
-  # - build
+  - build
   - deploy
 
 build:
