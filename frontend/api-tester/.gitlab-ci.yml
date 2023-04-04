@@ -21,7 +21,6 @@ build:
    - npm run build
   artifacts:
     paths:
-    # have to check about this path
       - frontend/api-tester/build/
 
 deploy:
@@ -34,5 +33,6 @@ deploy:
     - ssh -o StrictHostKeyChecking=no -i ${DEPLOYMENT_PRIVATE_KEY} 'csci5308vm16@csci5308vm16.research.cs.dal.ca' "echo 'ssh connection success'"
     - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/var/www/csci5308vm16.research.cs.dal.ca/"
   only:
+    # will change this later after finishing pipeline
     - setup-pipeline
   
