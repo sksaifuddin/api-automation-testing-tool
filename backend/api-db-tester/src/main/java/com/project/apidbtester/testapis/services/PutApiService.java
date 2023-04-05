@@ -65,38 +65,16 @@ public class PutApiService {
 
             Connection connection = clientDBInfoService.getClientDBCConnection();
 
-            Statement statement = connection.createStatement();
-
-            String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
-
-            ResultSet result = statement.executeQuery(query);
-
-            boolean allTestPassed = true;
-
-            while (result.next()) {
-                for (TestColumnValue testColumnValue : testColumnValues) {
-                    if (testColumnValue.getExpectedValue()
-                            .equals(result.getString(testColumnValue.getColumnName()))) {
-                        testColumnValue.setPassed(true);
-                    } else {
-                        allTestPassed = false;
-                    }
-                    testColumnValue.setActualValue(result.getString(testColumnValue.getColumnName()));
-                }
-            }
+            boolean allTestPassed = testColumnValuesWithResults(connection, testColumnValues, testCaseDetails);
             connection.close();
 
-            if (allTestPassed) {
-                testCaseDetails.setPassed(true);
-                testResponse.setAllTestPassed(true);
-            }
-            TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+            testCaseDetails.setPassed(allTestPassed);
+            testResponse.setAllTestPassed(allTestPassed);
 
-            for (TestColumnValue testColumnValue : testColumnValues) {
-                testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
-                columnValueRepository.save(testColumnValue);
-            }
+            saveTestColumnValues(testColumnValues, testCaseDetails);
+
             testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
+
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
@@ -109,4 +87,38 @@ public class PutApiService {
             throw new ClientDBConnectionException();
         }
     }
+
+    private boolean testColumnValuesWithResults(Connection connection, List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) throws SQLException {
+        Statement statement = connection.createStatement();
+        String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
+        ResultSet result = statement.executeQuery(query);
+
+        boolean allTestPassed = true;
+
+        while (result.next()) {
+            for (TestColumnValue testColumnValue : testColumnValues) {
+                if (testColumnValue.getExpectedValue()
+                        .equals(result.getString(testColumnValue.getColumnName()))) {
+                    testColumnValue.setPassed(true);
+                } else {
+                    allTestPassed = false;
+                }
+                testColumnValue.setActualValue(result.getString(testColumnValue.getColumnName()));
+            }
+        }
+
+        if (allTestPassed) {
+            testCaseDetails.setPassed(true);
+        }
+        return allTestPassed;
+    }
+
+    private void saveTestColumnValues(List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) {
+        TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+        for (TestColumnValue testColumnValue : testColumnValues) {
+            testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
+            columnValueRepository.save(testColumnValue);
+        }
+    }
+
 }
