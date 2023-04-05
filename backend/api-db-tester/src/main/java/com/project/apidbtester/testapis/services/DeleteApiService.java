@@ -1,9 +1,8 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -11,16 +10,12 @@ import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.utils.Query;
 import com.project.apidbtester.utils.TestRequest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -82,10 +77,10 @@ public class DeleteApiService {
                 testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
                 testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
                 return testResponse;
-            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
-                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
+            } else if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
             }
-            throw new ClientDBInfoService.ClientDBConnectionException();
+            throw new ClientDBConnectionException();
         }
     }
 }

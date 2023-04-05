@@ -1,6 +1,5 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -20,10 +19,7 @@ import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Service
 public class GetApiService {

@@ -8,9 +8,7 @@ import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.services.GetApiService;
 import com.project.apidbtester.testapis.services.PostApiService;
 import com.project.apidbtester.testapis.services.PutApiService;
-import com.project.apidbtester.utils.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

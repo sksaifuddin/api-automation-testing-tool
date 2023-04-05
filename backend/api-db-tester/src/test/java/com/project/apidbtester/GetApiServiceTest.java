@@ -1,6 +1,5 @@
 package com.project.apidbtester;
 
-import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestInput;
@@ -22,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.json.JSONObject;
 
 
-import java.sql.*;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;

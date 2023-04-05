@@ -1,11 +1,7 @@
 package com.project.apidbtester;
 
 import com.project.apidbtester.utils.ClientDBData;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

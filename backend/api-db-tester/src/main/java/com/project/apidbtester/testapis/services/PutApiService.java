@@ -1,7 +1,8 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -102,10 +103,10 @@ public class PutApiService {
                 testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
                 testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
                 return testResponse;
-            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
-                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
+            } else if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
             }
-            throw new ClientDBInfoService.ClientDBConnectionException();
+            throw new ClientDBConnectionException();
         }
     }
 }

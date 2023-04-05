@@ -2,6 +2,7 @@ package com.project.apidbtester;
 
 import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -10,7 +11,6 @@ import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.services.PostApiService;
-import com.project.apidbtester.testapis.services.PutApiService;
 import com.project.apidbtester.utils.ClientDBData;
 import com.project.apidbtester.utils.TestRequest;
 import io.restassured.response.Response;
@@ -158,7 +158,7 @@ class PostApiServiceTest {
         Connection connection = mock(Connection.class);
         when(clientDBInfoService.getClientDBCConnection()).thenReturn(null);
 
-        assertThrows(ClientDBInfoService.ClientDBConnectionException.class, () -> postApiService.fetchTestResult(testInput));
+        assertThrows(ClientDBConnectionException.class, () -> postApiService.fetchTestResult(testInput));
     }
 
 }

@@ -1,9 +1,8 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -26,10 +25,7 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Service
 public class PostApiService {
@@ -119,10 +115,10 @@ public class PostApiService {
                 testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
                 testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
                 return testResponse;
-            } else if (e instanceof ClientDBInfoService.ClientDBCredentialsNotFoundException) {
-                throw new ClientDBInfoService.ClientDBCredentialsNotFoundException();
+            } else if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
             }
-            throw new ClientDBInfoService.ClientDBConnectionException();
+            throw new ClientDBConnectionException();
         }
     }
 }

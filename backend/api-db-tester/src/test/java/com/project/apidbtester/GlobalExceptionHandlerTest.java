@@ -2,8 +2,12 @@ package com.project.apidbtester;
 
 import com.project.apidbtester.clientdb.ClientDBInfoService;
 import com.project.apidbtester.clientdb.constants.Constants;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
 import com.project.apidbtester.exceptions.GlobalExceptionHandler;
 import com.project.apidbtester.testapis.controllers.TestApiController;
+import com.project.apidbtester.testapis.exceptions.TestCaseNotFoundException;
+import com.project.apidbtester.testapis.exceptions.TestCasesNotFoundException;
 import com.project.apidbtester.testapis.services.TestCasesService;
 import com.project.apidbtester.utils.ErrorResponse;
 import org.junit.Before;
@@ -43,7 +47,7 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void testHandleClientDBCredentialsNotFoundException() {
         String errorMessage = Constants.CLIENT_DB_CREDENTIALS_NOT_FOUND;
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new ClientDBInfoService.ClientDBCredentialsNotFoundException());
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new ClientDBCredentialsNotFoundException());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(errorMessage, response.getBody().getMessage());
     }
@@ -51,7 +55,7 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void handleClientDBConnectionExceptionTest() {
         String errorMessage = Constants.CLIENT_DB_CONNECTION_FAIL;
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new ClientDBInfoService.ClientDBConnectionException());
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new ClientDBConnectionException());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals(errorMessage, response.getBody().getMessage());
     }
@@ -59,7 +63,7 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void testHandleTestCaseNotFoundException() {
         String errorMessage = TEST_CASE_NOT_FOUND_EX_MSG;
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new TestCasesService.TestCaseNotFoundException());
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new TestCaseNotFoundException());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(errorMessage, response.getBody().getMessage());
     }
@@ -67,7 +71,7 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void testHandleTestCasesNotFoundException() {
         String errorMessage = TEST_CASES_NOT_FOUND_EX_MSG;
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new TestCasesService.TestCasesNotFoundException());
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleExceptions(new TestCasesNotFoundException());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(errorMessage, response.getBody().getMessage());
     }

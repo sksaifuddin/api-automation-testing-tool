@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.project.apidbtester.testapis.constants.Constants;
+import com.project.apidbtester.testapis.exceptions.TestCaseNotFoundException;
+import com.project.apidbtester.testapis.exceptions.TestCasesNotFoundException;
 import com.project.apidbtester.testapis.services.TestCasesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,7 @@ public class TestCasesServiceTest {
     private TestCaseDetailsRepository testCaseDetailsRepository;
 
     @Test
-    public void testFetchAllTestCases() throws TestCasesService.TestCasesNotFoundException {
+    public void testFetchAllTestCases() throws TestCasesNotFoundException {
         List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
         testCaseDetailsList.add(new TestCaseDetails());
         testCaseDetailsList.add(new TestCaseDetails());
@@ -41,14 +43,14 @@ public class TestCasesServiceTest {
     }
 
     @Test
-    public void testFetchAllTestCases_whenNoTestCasesFound() throws TestCasesService.TestCaseNotFoundException {
+    public void testFetchAllTestCases_whenNoTestCasesFound() throws TestCaseNotFoundException {
         when(testCaseDetailsRepository.findAll()).thenThrow(new RuntimeException());
 
-        assertThrows(TestCasesService.TestCasesNotFoundException.class, () -> testCasesService.fetchAllTestCases());
+        assertThrows(TestCasesNotFoundException.class, () -> testCasesService.fetchAllTestCases());
     }
 
     @Test
-    public void testFetchTestCaseById() throws TestCasesService.TestCaseNotFoundException {
+    public void testFetchTestCaseById() throws TestCaseNotFoundException {
         TestCaseDetails testCaseDetails = TestCaseDetails.builder().id(1).build();
         when(testCaseDetailsRepository.findById(1)).thenReturn(Optional.of(testCaseDetails));
 
@@ -59,14 +61,14 @@ public class TestCasesServiceTest {
     }
 
     @Test
-    public void testFetchTestCaseById_whenTestCaseNotFound() throws TestCasesService.TestCaseNotFoundException {
+    public void testFetchTestCaseById_whenTestCaseNotFound() throws TestCaseNotFoundException {
         when(testCaseDetailsRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(TestCasesService.TestCaseNotFoundException.class, () -> testCasesService.fetchTestCaseById(1));
+        assertThrows(TestCaseNotFoundException.class, () -> testCasesService.fetchTestCaseById(1));
     }
 
     @Test
-    public void testDeleteTestCaseById() throws TestCasesService.TestCaseNotFoundException {
+    public void testDeleteTestCaseById() throws TestCaseNotFoundException {
         doNothing().when(testCaseDetailsRepository).deleteById(1);
 
         String result = testCasesService.deleteTestCaseById(1);
@@ -75,9 +77,9 @@ public class TestCasesServiceTest {
     }
 
     @Test
-    public void testDeleteTestCaseById_whenTestCaseNotFound() throws TestCasesService.TestCaseNotFoundException {
+    public void testDeleteTestCaseById_whenTestCaseNotFound() throws TestCaseNotFoundException {
         doThrow(new RuntimeException()).when(testCaseDetailsRepository).deleteById(1);
 
-        assertThrows(TestCasesService.TestCaseNotFoundException.class, () -> testCasesService.deleteTestCaseById(1));
+        assertThrows(TestCaseNotFoundException.class, () -> testCasesService.deleteTestCaseById(1));
     }
 }

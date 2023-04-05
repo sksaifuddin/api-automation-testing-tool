@@ -4,7 +4,6 @@ import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.controllers.TestCasesController;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.services.TestCasesService;
-import com.project.apidbtester.utils.ErrorResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

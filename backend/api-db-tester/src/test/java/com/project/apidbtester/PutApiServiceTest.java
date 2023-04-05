@@ -2,6 +2,7 @@ package com.project.apidbtester;
 
 import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -11,23 +12,17 @@ import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.services.PutApiService;
 import com.project.apidbtester.utils.TestRequest;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -153,7 +148,7 @@ class PutApiServiceTest {
 		Connection connection = mock(Connection.class);
 		when(clientDBInfoService.getClientDBCConnection()).thenReturn(null);
 
-		assertThrows(ClientDBInfoService.ClientDBConnectionException.class, () -> putApiService.fetchTestResult(testInput));
+		assertThrows(ClientDBConnectionException.class, () -> putApiService.fetchTestResult(testInput));
 	}
 
 }

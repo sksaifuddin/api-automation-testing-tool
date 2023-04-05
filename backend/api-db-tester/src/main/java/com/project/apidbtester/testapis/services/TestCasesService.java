@@ -3,6 +3,8 @@ package com.project.apidbtester.testapis.services;
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
+import com.project.apidbtester.testapis.exceptions.TestCaseNotFoundException;
+import com.project.apidbtester.testapis.exceptions.TestCasesNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,18 +38,6 @@ public class TestCasesService {
             return Constants.TEST_CASE_DELETED_SUCCESSFULLY_MSG;
         } catch (Exception e) {
             throw new TestCaseNotFoundException();
-        }
-    }
-
-    public static class TestCaseNotFoundException extends RuntimeException {
-        public TestCaseNotFoundException() {
-            super(Constants.TEST_CASE_NOT_FOUND_EX_MSG);
-        }
-    }
-
-    public static class TestCasesNotFoundException extends RuntimeException {
-        public TestCasesNotFoundException() {
-            super(Constants.TEST_CASES_NOT_FOUND_EX_MSG);
         }
     }
 }

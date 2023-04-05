@@ -2,9 +2,7 @@ package com.project.apidbtester.clientdb;
 
 import com.project.apidbtester.clientdb.dtos.ClientDBMetaData;
 import com.project.apidbtester.clientdb.dtos.TestClientConnectionResponse;
-import com.project.apidbtester.utils.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
