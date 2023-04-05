@@ -87,7 +87,7 @@ class PostApiServiceTest {
         TestResponse testResponse = postApiService.fetchTestResult(testInput);
 
         assertTrue(testResponse.getAllTestPassed());
-        verify(testCaseDetailsRepository, times(1)).save(any());
+        verify(testCaseDetailsRepository, times(2)).save(any());
         verify(columnValueRepository, times(1)).save(any());
     }
 
@@ -117,7 +117,7 @@ class PostApiServiceTest {
         TestResponse testResponse = postApiService.fetchTestResult(testInput);
 
         assertFalse(testResponse.getAllTestPassed());
-        verify(testCaseDetailsRepository, times(1)).save(any());
+        verify(testCaseDetailsRepository, times(2)).save(any());
         verify(columnValueRepository, times(1)).save(any());
     }
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,7 +47,6 @@ public class PostApiService {
     private ClientDBData clientDBData = new ClientDBData();
 
     public TestResponse fetchTestResult(TestInput testInput) {
-
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
         List<TestColumnValue> testColumnValues = testInput.getColumnValues();
         TestResponse testResponse = new TestResponse();
@@ -67,48 +67,23 @@ public class PostApiService {
             }
 
             Connection connection = clientDBInfoService.getClientDBCConnection();
-
             String tableName = testCaseDetails.getTableName();
             JSONObject jsonObject = new JSONObject(r.asString());
-
             String primaryKeyName = clientDBData.getPrimaryKey(tableName, connection);
             String primaryKeyValue = String.valueOf(jsonObject.get(primaryKeyName));
-
             testCaseDetails.setPrimaryKeyName(primaryKeyName);
             testCaseDetails.setPrimaryKeyValue(primaryKeyValue);
 
-            Statement statement = connection.createStatement();
-
-            String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
-
-            ResultSet result = statement.executeQuery(query);
-
-            boolean allTestPassed = true;
-
-            while (result.next()) {
-                for (TestColumnValue testColumnValue : testColumnValues) {
-                    if (testColumnValue.getExpectedValue()
-                            .equals(result.getString(testColumnValue.getColumnName()))) {
-                        testColumnValue.setPassed(true);
-                    } else {
-                        allTestPassed = false;
-                    }
-                    testColumnValue.setActualValue(result.getString(testColumnValue.getColumnName()));
-                }
-            }
+            List<TestColumnValue> testColumnValuesWithResults = getTestColumnValuesWithResults(connection, testColumnValues, testCaseDetails);
             connection.close();
 
-            if (allTestPassed) {
-                testCaseDetails.setPassed(true);
-                testResponse.setAllTestPassed(true);
-            }
-            TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+            saveTestColumnValues(testColumnValuesWithResults, testCaseDetails);
 
-            for (TestColumnValue testColumnValue : testColumnValues) {
-                testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
-                columnValueRepository.save(testColumnValue);
-            }
-            testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
+            testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValuesWithResults, ColumnResult[].class)));
+            testResponse.setAllTestPassed(allTestPassed(testColumnValuesWithResults));
+            testCaseDetails.setPassed(testResponse.getAllTestPassed());
+            testCaseDetailsRepository.save(testCaseDetails);
+
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
@@ -120,5 +95,48 @@ public class PostApiService {
             }
             throw new ClientDBConnectionException();
         }
+    }
+
+    private List<TestColumnValue> getTestColumnValuesWithResults(Connection connection, List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) throws SQLException {
+        Statement statement = connection.createStatement();
+        String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
+        ResultSet result = statement.executeQuery(query);
+
+        List<TestColumnValue> testColumnValuesWithResults = new ArrayList<>();
+        boolean allTestPassed = true;
+
+        while (result.next()) {
+            for (TestColumnValue testColumnValue : testColumnValues) {
+                if (testColumnValue.getExpectedValue()
+                        .equals(result.getString(testColumnValue.getColumnName()))) {
+                    testColumnValue.setPassed(true);
+                } else {
+                    allTestPassed = false;
+                }
+                testColumnValue.setActualValue(result.getString(testColumnValue.getColumnName()));
+                testColumnValuesWithResults.add(testColumnValue);
+            }
+        }
+
+        if (allTestPassed) {
+            testCaseDetails.setPassed(true);
+        }
+
+        return testColumnValuesWithResults;
+    }
+
+    private void saveTestColumnValues(List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) {
+        TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+        for (TestColumnValue testColumnValue : testColumnValues) {
+            testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
+            columnValueRepository.save(testColumnValue);
+        }
+    }
+
+    private boolean allTestPassed(List<TestColumnValue> testColumnValues) {
+        for (TestColumnValue testColumnValue : testColumnValues) {
+            if (!testColumnValue.getPassed()) return false;
+        }
+        return true;
     }
 }
