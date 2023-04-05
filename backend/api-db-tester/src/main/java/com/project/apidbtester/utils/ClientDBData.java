@@ -1,6 +1,5 @@
 package com.project.apidbtester.utils;
 
-import com.project.apidbtester.clientdb.ClientDBCredentialsEntity;
 import com.project.apidbtester.testapis.constants.Constants;
 
 import java.sql.*;
