@@ -25,7 +25,7 @@ const AddTestCaseContainer = ({getTestCaseExecutionResult}) => {
       testCaseDetails,
       columnValues
     }
-    console.log('final test objec', finalTestObject);
+  
   };
 
   const testCaseExecution = () => {

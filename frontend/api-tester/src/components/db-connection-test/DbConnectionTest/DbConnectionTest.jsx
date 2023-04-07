@@ -10,6 +10,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+// eslint-disable-next-line no-unused-vars
+import styles from './DbConnectionTest.scss'
 const DbConnectionTest = (props) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -80,13 +82,16 @@ const DbConnectionTest = (props) => {
 
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    Test Connection
+                    <div className="heading">
+                        Test Database Connection
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
                         fullWidth
                         required
                         value={username}
+                        defaultValue={username}
                         label="User Name"
                         onChange={(e) => setUsername(e.target.value)}
                     />
