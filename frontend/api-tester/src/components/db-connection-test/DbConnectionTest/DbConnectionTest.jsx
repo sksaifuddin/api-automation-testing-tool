@@ -21,7 +21,7 @@ const DbConnectionTest = (props) => {
 
     useEffect(() => {
         getClientDBCredentials().then((data) => {
-            const databaseDetails = data.data[0];
+            const databaseDetails = data.data;
             setUrl(databaseDetails.databaseUrl);
             setPassword(databaseDetails.password);
             setUsername(databaseDetails.userName);

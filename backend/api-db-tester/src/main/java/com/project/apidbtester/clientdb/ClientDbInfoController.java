@@ -15,7 +15,7 @@ public class ClientDbInfoController {
     @Autowired
     private ClientDBInfoService clientDBInfoService;
 
-    @GetMapping("/test-client-db-connection")
+    @PostMapping("/test-client-db-connection")
     public ResponseEntity<TestClientConnectionResponse> testClientDBConnection(@RequestBody ClientDBCredentialsEntity clientDBCredentialsEntity) {
         String connectionMessage = clientDBInfoService.testClientDBConnection(clientDBCredentialsEntity);
         TestClientConnectionResponse testClientConnectionResponse = TestClientConnectionResponse
