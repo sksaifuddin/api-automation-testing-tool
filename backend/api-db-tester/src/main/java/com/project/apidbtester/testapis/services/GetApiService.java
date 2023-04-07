@@ -1,8 +1,6 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
@@ -10,7 +8,7 @@ import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.entities.TestColumnValue;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.dtos.TestInput;
-import com.project.apidbtester.testapis.utils.ClientDBData;
+import com.project.apidbtester.utils.TestRequest;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-
-import javax.sql.rowset.CachedRowSet;
 
 @Service
 public class GetApiService {
@@ -41,26 +33,25 @@ public class GetApiService {
     @Autowired
     private ModelMapper modelMapper;
 
+    private TestRequest testRequest = new TestRequest();
+
     public TestResponse fetchTestResult(TestInput testInput) {
 
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
         List<TestColumnValue> testColumnValues = testInput.getColumnValues();
         TestResponse testResponse = new TestResponse();
-//        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
-            RequestSpecification request = RestAssured.given();
-            request.contentType(ContentType.JSON);
-            request.baseUri(testCaseDetails.getUrl());
-            Response r = request.get();
+            Response r = testRequest.sendRequest(testCaseDetails);
+            if (r == null) throw new ConnectException();
+
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
-                testResponse.setHttpErrorMsg(r.body().print());
                 testCaseDetails.setPassed(false);
-                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetails.setHttpErrorMsg(r.statusLine());
                 testCaseDetailsRepository.save(testCaseDetails);
                 return testResponse;
             }
@@ -79,8 +70,6 @@ public class GetApiService {
                 columnValue.setActualValue(jsonObject.get(columnValue.getColumnName()).toString());
             }
 
-            System.out.println(testColumnValues);
-
             if (allTestPassed) {
                 testCaseDetails.setPassed(true);
                 testResponse.setAllTestPassed(true);
@@ -91,17 +80,12 @@ public class GetApiService {
                 testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
                 columnValueRepository.save(testColumnValue);
             }
-            List<ColumnResult> columnResults = Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class));
             testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
 
             return testResponse;
         } catch (Exception e) {
-            testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
-//                testResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//                testCaseDetails.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//                testCaseDetailsRepository.save(testCaseDetails);
-//                return testResponse;
+            testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+            testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
             return testResponse;
         }
     }

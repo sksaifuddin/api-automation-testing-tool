@@ -1,15 +1,12 @@
-package com.project.apidbtester.clientdbinfo;
+package com.project.apidbtester.clientdb;
 
-import com.project.apidbtester.clientdbinfo.constants.Constants;
-import com.project.apidbtester.clientdbinfo.dtos.ClientDBMetaData;
-import com.project.apidbtester.constants.GlobalConstants;
-import com.project.apidbtester.responses.ClientDBConnectionException;
-
-import com.project.apidbtester.responses.dtos.ApiResponse;
+import com.project.apidbtester.clientdb.constants.Constants;
+import com.project.apidbtester.clientdb.dtos.ClientDBMetaData;
+import com.project.apidbtester.utils.Query;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.sql.*;
 import java.util.*;
 
@@ -19,27 +16,29 @@ public class ClientDBInfoService {
     @Autowired
     private ClientDBInfoRepository clientDBInfoRepository;
 
-    public ApiResponse testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
+    public String testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) {
         try {
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
-            clientDBCredentialsEntity.setDatabaseId(GlobalConstants.DB_CREDENTIALS_ID);
+            String dbUrl = clientDBCredentialsEntity.getDatabaseUrl();
+            String userName = clientDBCredentialsEntity.getUserName();
+            String password = clientDBCredentialsEntity.getPassword();
+
+            Class.forName(Constants.JDBC_DRIVER);
+            DriverManager.getConnection(dbUrl, userName, password);
+            clientDBCredentialsEntity.setDatabaseId(Constants.DB_CREDENTIALS_ID);
             clientDBInfoRepository.save(clientDBCredentialsEntity);
-            ApiResponse successResponse = new ApiResponse(HttpStatus.valueOf(200), "DB Connection Successful", 200);
-            return successResponse;
+            return Constants.CLIENT_DB_CONNECTION_SUCCESSFUL;
         } catch (Exception e) {
             throw new ClientDBConnectionException();
         }
     }
 
-    public List<ClientDBCredentialsEntity> fetchClientDBCredentials() throws ClientDBConnectionException {
-       return clientDBInfoRepository.findAll();
+    public ClientDBCredentialsEntity getClientDBCredentials() {
+        return clientDBInfoRepository.findById(Constants.DB_CREDENTIALS_ID).orElseThrow(()-> new ClientDBCredentialsNotFoundException());
     }
 
-    public Map<String, ClientDBMetaData> fetchClientDBMetaData(ClientDBCredentialsEntity clientDBCredentialsEntity) throws ClientDBConnectionException {
+    public Map<String, ClientDBMetaData> fetchClientDBMetaData() {
         try {
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager.getConnection(clientDBCredentialsEntity.getDatabaseUrl(), clientDBCredentialsEntity.getUserName(), clientDBCredentialsEntity.getPassword());
+            Connection connection = getClientDBCConnection();
             Statement statement = connection.createStatement();
 
             Map<String, ClientDBMetaData> map = new HashMap<>();
@@ -64,7 +63,8 @@ public class ClientDBInfoService {
                     }
 
                     Statement statementCols = connection.createStatement();
-                    ResultSet resultSetColumns = statementCols.executeQuery("select * from "+tableName+";");
+                    String query = Query.generateSelectQuery(tableName);
+                    ResultSet resultSetColumns = statementCols.executeQuery(query);
                     ResultSetMetaData resultSetMetaDataCols = resultSetColumns.getMetaData();
                     int colCount = resultSetMetaDataCols.getColumnCount();
                     List<Map<String, String>> columnsList= new ArrayList<>();
@@ -86,4 +86,22 @@ public class ClientDBInfoService {
         }
     }
 
+    public Connection getClientDBCConnection() {
+        try {
+            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(Constants.DB_CREDENTIALS_ID).orElseThrow(() -> new ClientDBCredentialsNotFoundException());
+            Class.forName(Constants.JDBC_DRIVER);
+
+            String dbUrl = clientDBCredentials.getDatabaseUrl();
+            String userName = clientDBCredentials.getUserName();
+            String password = clientDBCredentials.getPassword();
+
+            return DriverManager.getConnection(dbUrl, userName, password);
+        } catch (Exception e) {
+            if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
+            }
+            throw new ClientDBConnectionException();
+        }
+    }
 }
+

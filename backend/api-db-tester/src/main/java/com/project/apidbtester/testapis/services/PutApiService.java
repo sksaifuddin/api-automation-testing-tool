@@ -1,8 +1,9 @@
 package com.project.apidbtester.testapis.services;
 
-import com.project.apidbtester.clientdbinfo.ClientDBCredentialsEntity;
-import com.project.apidbtester.clientdbinfo.ClientDBInfoRepository;
-import com.project.apidbtester.constants.GlobalConstants;
+import com.project.apidbtester.clientdb.ClientDBInfoService;
+import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
+import com.project.apidbtester.clientdb.exceptions.ClientDBCredentialsNotFoundException;
+import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
@@ -10,6 +11,8 @@ import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.entities.TestColumnValue;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.dtos.TestInput;
+import com.project.apidbtester.utils.Query;
+import com.project.apidbtester.utils.TestRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,16 +23,10 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Service
 public class PutApiService {
-
-    @Autowired
-    ClientDBInfoRepository clientDBInfoRepository;
 
     @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
@@ -38,102 +35,90 @@ public class PutApiService {
     private ColumnValueRepository columnValueRepository;
 
     @Autowired
+    private ClientDBInfoService clientDBInfoService;
+
+    @Autowired
     private ModelMapper modelMapper;
+
+    private TestRequest testRequest = new TestRequest();
 
     public TestResponse fetchTestResult(TestInput testInput) {
 
         TestCaseDetails testCaseDetails = testInput.getTestCaseDetails();
         List<TestColumnValue> testColumnValues = testInput.getColumnValues();
         TestResponse testResponse = new TestResponse();
-//        List<ColumnResult> columnResults = modelMapper.map(testColumnValues, ColumnResult.class);
 
         try {
-            RequestSpecification request = RestAssured.given();
-            request.contentType(ContentType.JSON);
-            request.baseUri(testCaseDetails.getUrl());
-            request.body(testCaseDetails.getPayload());
-            Response r = request.put();
+            Response r = testRequest.sendRequest(testCaseDetails);
+            if (r == null) throw new ConnectException();
+
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
-                testResponse.setHttpErrorMsg(r.body().print());
                 testCaseDetails.setPassed(false);
-                testCaseDetails.setHttpErrorMsg(r.getBody().print());
+                testCaseDetails.setHttpErrorMsg(r.statusLine());
                 testCaseDetailsRepository.save(testCaseDetails);
                 return testResponse;
             }
 
-            ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(GlobalConstants.DB_CREDENTIALS_ID).orElseThrow();
+            Connection connection = clientDBInfoService.getClientDBCConnection();
 
-            Class.forName(GlobalConstants.JDBC_DRIVER);
-            Connection connection = DriverManager
-                    .getConnection(clientDBCredentials.getDatabaseUrl(), clientDBCredentials.getUserName(), clientDBCredentials.getPassword());
-
-            Statement statement = connection.createStatement();
-
-            StringBuilder query = new StringBuilder("select ");
-
-            for (int i = 0; i < testColumnValues.size(); i++) {
-                if (i == testColumnValues.size() - 1) query.append(testColumnValues.get(i).getColumnName());
-                else query.append(testColumnValues.get(i).getColumnName()).append(", ");
-            }
-
-            query.append(" from ")
-                    .append(testCaseDetails.getTableName())
-                    .append(" where ")
-                    .append(testCaseDetails.getPrimaryKeyName())
-                    .append(" = ")
-                    .append(testCaseDetails.getPrimaryKeyValue())
-                    .append(";");
-
-            ResultSet result = statement.executeQuery(String.valueOf(query));
-
-            boolean allTestPassed = true;
-
-            while (result.next()) {
-                for (int i = 0; i < testColumnValues.size(); i++) {
-                    if (testColumnValues.get(i).getExpectedValue()
-                            .equals(result.getString(testColumnValues.get(i).getColumnName()))) {
-                        testColumnValues.get(i).setPassed(true);
-                    } else {
-                        allTestPassed = false;
-                    }
-                    testColumnValues.get(i).setActualValue(result.getString(testColumnValues.get(i).getColumnName()));
-                }
-            }
+            boolean allTestPassed = testColumnValuesWithResults(connection, testColumnValues, testCaseDetails);
             connection.close();
 
-            if (allTestPassed) {
-                testCaseDetails.setPassed(true);
-                testResponse.setAllTestPassed(true);
-            }
-            TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+            testCaseDetails.setPassed(allTestPassed);
+            testResponse.setAllTestPassed(allTestPassed);
 
-            for (TestColumnValue testColumnValue : testColumnValues) {
-                testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
-                columnValueRepository.save(testColumnValue);
-            }
-            List<ColumnResult> columnResults = Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class));
+            saveTestColumnValues(testColumnValues, testCaseDetails);
+
             testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValues, ColumnResult[].class)));
+
             return testResponse;
         } catch (Exception e) {
             if (e instanceof ConnectException) {
-                testResponse.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-                testResponse.setHttpErrorMsg("Unable to call api");
-//                testCaseDetails.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
-//                testCaseDetailsRepository.save(testCaseDetails);
+                testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+                testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
                 return testResponse;
-            } else {
-                testResponse.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                testResponse.setHttpErrorMsg("Database connection Failed, please check the details again");
-                return testResponse;
-//                testResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//                testCaseDetails.setHttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//                testCaseDetailsRepository.save(testCaseDetails);
-//                return testResponse;
+            } else if (e instanceof ClientDBCredentialsNotFoundException) {
+                throw new ClientDBCredentialsNotFoundException();
             }
+            throw new ClientDBConnectionException();
         }
     }
+
+    private boolean testColumnValuesWithResults(Connection connection, List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) throws SQLException {
+        Statement statement = connection.createStatement();
+        String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
+        ResultSet result = statement.executeQuery(query);
+
+        boolean allTestPassed = true;
+
+        while (result.next()) {
+            for (TestColumnValue testColumnValue : testColumnValues) {
+                if (testColumnValue.getExpectedValue()
+                        .equals(result.getString(testColumnValue.getColumnName()))) {
+                    testColumnValue.setPassed(true);
+                } else {
+                    allTestPassed = false;
+                }
+                testColumnValue.setActualValue(result.getString(testColumnValue.getColumnName()));
+            }
+        }
+
+        if (allTestPassed) {
+            testCaseDetails.setPassed(true);
+        }
+        return allTestPassed;
+    }
+
+    private void saveTestColumnValues(List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) {
+        TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
+        for (TestColumnValue testColumnValue : testColumnValues) {
+            testColumnValue.setTestCaseDetails(testCaseDetailsSaved);
+            columnValueRepository.save(testColumnValue);
+        }
+    }
+
 }

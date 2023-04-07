@@ -1,10 +1,14 @@
 package com.project.apidbtester.testapis.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class TestColumnValue {
     @Id
     @GeneratedValue

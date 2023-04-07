@@ -1,4 +1,4 @@
-package com.project.apidbtester;
+package com.project.apidbtester.unit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
