@@ -1,5 +1,8 @@
 package com.project.apidbtester.clientdb.constants;
 
+/**
+ * This class contains constants needed by classes in clientdb package
+ */
 public class Constants {
     public static final String TABLE = "TABLE";
     public static final String TABLE_CAT = "TABLE_CAT";

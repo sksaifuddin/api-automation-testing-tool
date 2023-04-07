@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * ClientDBCredentialsEntity is used to store client db credentials
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
