@@ -1,4 +1,4 @@
-package com.project.apidbtester;
+package com.project.apidbtester.unit;
 
 import com.project.apidbtester.testapis.constants.Constants;
 import com.project.apidbtester.testapis.controllers.TestCasesController;

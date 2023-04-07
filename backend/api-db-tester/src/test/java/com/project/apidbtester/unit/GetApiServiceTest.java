@@ -1,8 +1,6 @@
-package com.project.apidbtester;
+package com.project.apidbtester.unit;
 
-import com.project.apidbtester.clientdb.ClientDBInfoRepository;
 import com.project.apidbtester.clientdb.ClientDBInfoService;
-import com.project.apidbtester.clientdb.exceptions.ClientDBConnectionException;
 import com.project.apidbtester.testapis.dtos.ColumnResult;
 import com.project.apidbtester.testapis.dtos.TestInput;
 import com.project.apidbtester.testapis.dtos.TestResponse;
@@ -10,8 +8,7 @@ import com.project.apidbtester.testapis.entities.TestColumnValue;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
 import com.project.apidbtester.testapis.repositories.ColumnValueRepository;
 import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
-import com.project.apidbtester.testapis.services.PostApiService;
-import com.project.apidbtester.utils.ClientDBData;
+import com.project.apidbtester.testapis.services.GetApiService;
 import com.project.apidbtester.utils.TestRequest;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -21,21 +18,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.json.JSONObject;
 
-import java.sql.*;
+
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PostApiServiceTest {
+class GetApiServiceTest {
 
     @InjectMocks
-    private PostApiService postApiService;
-
-    @Mock
-    ClientDBInfoRepository clientDBInfoRepository;
+    private GetApiService getApiService;
 
     @Mock
     private TestCaseDetailsRepository testCaseDetailsRepository;
@@ -58,9 +53,6 @@ class PostApiServiceTest {
     @Mock
     TestRequest testRequest;
 
-    @Mock
-    ClientDBData clientDBData;
-
     @Test
     void testFetchTestResult_AllTestPassed() throws Exception {
         TestInput testInput = new TestInput();
@@ -73,21 +65,16 @@ class PostApiServiceTest {
         doReturn(HttpStatus.OK.value()).when(response).statusCode();
         doReturn(response).when(testRequest).sendRequest(testCaseDetails);
         when(modelMapper.map(eq(Arrays.asList(testColumnValue)), eq(ColumnResult[].class))).thenReturn(new ColumnResult[]{new ColumnResult("first_name", "shubham", "shubham", true)});
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(clientDBInfoService.getClientDBCConnection()).thenReturn(connection);
-        when(clientDBData.getPrimaryKey(any(), any())).thenReturn("first_name");
-        when(response.asString()).thenReturn("{\"first_name\":\"shubham\"}");
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("first_name")).thenReturn("shubham");
 
-        TestResponse testResponse = postApiService.fetchTestResult(testInput);
+        JSONObject mockJsonObject = mock(JSONObject.class);
+//        String jsonString = mockJsonObject.toString();
+        when(response.asString()).thenReturn("{\"first_name\":\"shubham\"}");
+//        when(mockJsonObject.get(anyString())).thenReturn("shubham");
+
+        TestResponse testResponse = getApiService.fetchTestResult(testInput);
 
         assertTrue(testResponse.getAllTestPassed());
-        verify(testCaseDetailsRepository, times(2)).save(any());
+        verify(testCaseDetailsRepository, times(1)).save(any());
         verify(columnValueRepository, times(1)).save(any());
     }
 
@@ -103,21 +90,13 @@ class PostApiServiceTest {
         doReturn(HttpStatus.OK.value()).when(response).statusCode();
         doReturn(response).when(testRequest).sendRequest(testCaseDetails);
         when(modelMapper.map(eq(Arrays.asList(testColumnValue)), eq(ColumnResult[].class))).thenReturn(new ColumnResult[]{new ColumnResult("first_name", "shubham", "saif", false)});
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(clientDBInfoService.getClientDBCConnection()).thenReturn(connection);
-        when(clientDBData.getPrimaryKey(any(), any())).thenReturn("first_name");
-        when(response.asString()).thenReturn("{\"first_name\":\"shubham\"}");
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("first_name")).thenReturn("saif");
 
-        TestResponse testResponse = postApiService.fetchTestResult(testInput);
+        when(response.asString()).thenReturn("{\"first_name\":\"saif\"}");
+
+        TestResponse testResponse = getApiService.fetchTestResult(testInput);
 
         assertFalse(testResponse.getAllTestPassed());
-        verify(testCaseDetailsRepository, times(2)).save(any());
+        verify(testCaseDetailsRepository, times(1)).save(any());
         verify(columnValueRepository, times(1)).save(any());
     }
 
@@ -127,7 +106,7 @@ class PostApiServiceTest {
         testInput.setTestCaseDetails(testCaseDetails);
         doReturn(null).when(testRequest).sendRequest(testCaseDetails);
 
-        TestResponse testResponse = postApiService.fetchTestResult(testInput);
+        TestResponse testResponse = getApiService.fetchTestResult(testInput);
 
         assertEquals(testResponse.getHttpStatusCode(), HttpStatus.SERVICE_UNAVAILABLE.value());
         assertFalse(testResponse.getAllTestPassed());
@@ -142,25 +121,11 @@ class PostApiServiceTest {
         doReturn(HttpStatus.NOT_FOUND.toString()).when(response).statusLine();
         doReturn(response).when(testRequest).sendRequest(testCaseDetails);
 
-        TestResponse testResponse = postApiService.fetchTestResult(testInput);
+        TestResponse testResponse = getApiService.fetchTestResult(testInput);
 
         assertEquals(testResponse.getHttpErrorMsg(), HttpStatus.NOT_FOUND.toString());
         assertFalse(testResponse.getAllTestPassed());
     }
-
-    @Test
-    void testFetchTestResult_ClientDBConnectionException() throws Exception {
-        TestInput testInput = new TestInput();
-        testInput.setTestCaseDetails(testCaseDetails);
-
-        doReturn(HttpStatus.OK.value()).when(response).statusCode();
-        doReturn(response).when(testRequest).sendRequest(testCaseDetails);
-        Connection connection = mock(Connection.class);
-        when(clientDBInfoService.getClientDBCConnection()).thenReturn(null);
-
-        assertThrows(ClientDBConnectionException.class, () -> postApiService.fetchTestResult(testInput));
-    }
-
 }
 
 
