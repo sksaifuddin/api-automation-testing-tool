@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * GlobalExceptionHandler handles the common exceptions
+ * that are thrown by methods in various classes
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
@@ -23,6 +27,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     })
     public ResponseEntity<ErrorResponse> handleExceptions(RuntimeException e) {
         ErrorResponse message = ErrorResponse.builder().message(e.getMessage()).build();
+
+        // set httpsStatus according to the exception that was thrown
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (e instanceof ClientDBCredentialsNotFoundException) {
             httpStatus = HttpStatus.NOT_FOUND;
