@@ -31,10 +31,10 @@ public class PutTest {
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
                 "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
-                "        \"payload\": \"{\\\"id\\\": 2, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
+                "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +
-                "        \"primaryKeyValue\": 2\n" +
+                "        \"primaryKeyValue\": 211\n" +
                 "    },\n" +
                 "    \"columnValues\": [\n" +
                 "        {\n" +
@@ -71,10 +71,10 @@ public class PutTest {
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
                 "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
-                "        \"payload\": \"{\\\"id\\\": 2, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
+                "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +
-                "        \"primaryKeyValue\": 2\n" +
+                "        \"primaryKeyValue\": 211\n" +
                 "    },\n" +
                 "    \"columnValues\": [\n" +
                 "        {\n" +
