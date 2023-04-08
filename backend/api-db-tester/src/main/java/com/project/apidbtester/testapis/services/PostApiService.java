@@ -28,6 +28,9 @@ import java.util.List;
 
 import io.restassured.response.Response;
 
+/**
+ * PostApiService is used to test post api request
+ */
 @Service
 public class PostApiService {
 
@@ -43,7 +46,7 @@ public class PostApiService {
     @Autowired
     private ModelMapper modelMapper;
 
-    private TestRequest testRequest = new TestRequest();
+    private TestRequest testRequest = new TestRequest(); // used to forward the api to the client app
     private ClientDBData clientDBData = new ClientDBData();
 
     public TestResponse fetchTestResult(TestInput testInput) {
@@ -52,12 +55,14 @@ public class PostApiService {
         TestResponse testResponse = new TestResponse();
 
         try {
+            // forward the api to client app
             Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
+            // error response from client app
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
                 testCaseDetails.setPassed(false);
@@ -66,17 +71,24 @@ public class PostApiService {
                 return testResponse;
             }
 
+            // success response from client app
+            // make connection to client db and get primary key name and value
+
             Connection connection = clientDBInfoService.getClientDBCConnection();
             String tableName = testCaseDetails.getTableName();
             JSONObject jsonObject = new JSONObject(r.asString());
             String primaryKeyName = clientDBData.getPrimaryKey(tableName, connection);
             String primaryKeyValue = String.valueOf(jsonObject.get(primaryKeyName));
+
+            // set primary key name and value
             testCaseDetails.setPrimaryKeyName(primaryKeyName);
             testCaseDetails.setPrimaryKeyValue(primaryKeyValue);
 
+            // verify results by checking from db directly
             List<TestColumnValue> testColumnValuesWithResults = getTestColumnValuesWithResults(connection, testColumnValues, testCaseDetails);
             connection.close();
 
+            // save test details to db and return test response
             saveTestColumnValues(testColumnValuesWithResults, testCaseDetails);
 
             testResponse.setColumnValues(Arrays.asList(modelMapper.map(testColumnValuesWithResults, ColumnResult[].class)));
@@ -86,6 +98,7 @@ public class PostApiService {
 
             return testResponse;
         } catch (Exception e) {
+            // handle exceptions
             if (e instanceof ConnectException) {
                 testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
                 testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
@@ -97,6 +110,14 @@ public class PostApiService {
         }
     }
 
+    /**
+     * get the list of results of test performed on db
+     * @param connection connection to client db
+     * @param testColumnValues columns to be tested
+     * @param testCaseDetails details of test to which testColumnValues is related
+     * @return list of column test results
+     * @throws SQLException
+     */
     private List<TestColumnValue> getTestColumnValuesWithResults(Connection connection, List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) throws SQLException {
         Statement statement = connection.createStatement();
         String query = Query.generateSelectQueryWithWhereClause(testColumnValues, testCaseDetails);
@@ -105,6 +126,7 @@ public class PostApiService {
         List<TestColumnValue> testColumnValuesWithResults = new ArrayList<>();
         boolean allTestPassed = true;
 
+        // verify each column value one by one
         while (result.next()) {
             for (TestColumnValue testColumnValue : testColumnValues) {
                 if (testColumnValue.getExpectedValue()
@@ -125,6 +147,11 @@ public class PostApiService {
         return testColumnValuesWithResults;
     }
 
+    /**
+     * save the result of tests performed on columns to db
+     * @param testColumnValues list of test results performed on columns
+     * @param testCaseDetails the detail of the test to which testColumnValues list is linked
+     */
     private void saveTestColumnValues(List<TestColumnValue> testColumnValues, TestCaseDetails testCaseDetails) {
         TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
         for (TestColumnValue testColumnValue : testColumnValues) {
@@ -133,6 +160,11 @@ public class PostApiService {
         }
     }
 
+    /**
+     * check if all tests passed
+     * @param testColumnValues list of columns values
+     * @return true if all tests passed, else false
+     */
     private boolean allTestPassed(List<TestColumnValue> testColumnValues) {
         for (TestColumnValue testColumnValue : testColumnValues) {
             if (!testColumnValue.getPassed()) return false;

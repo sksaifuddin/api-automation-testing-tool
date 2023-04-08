@@ -6,6 +6,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * TestInput is used to parse the test api request body in the required format so that it can
+ * be processed by the service classes
+ */
 @Data
 public class TestInput {
     private TestCaseDetails testCaseDetails;

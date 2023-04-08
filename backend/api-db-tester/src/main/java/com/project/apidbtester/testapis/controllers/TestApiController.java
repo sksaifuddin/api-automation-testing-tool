@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * TestApiController receives requests to test different types of APIs
+ */
 @RestController
 @RequestMapping("/api")
 public class TestApiController {
@@ -27,6 +30,8 @@ public class TestApiController {
     @PostMapping("/test")
     public ResponseEntity<TestResponse> fetchTestResult(@RequestBody TestInput testInput) {
         String inputRequestType = testInput.getTestCaseDetails().getType();
+
+        // Handle request based on the api request type
         try {
             ApiRequestType apiRequestType = ApiRequestType.valueOf(inputRequestType.toUpperCase());
 
@@ -47,6 +52,9 @@ public class TestApiController {
         }
     }
 
+    /**
+     * Throw invalid request if request does not match any existing types
+     */
     public static class InvalidRequestTypeException extends RuntimeException {
         public InvalidRequestTypeException() {
             super(Constants.INVALID_API_REQUEST_TYPE);

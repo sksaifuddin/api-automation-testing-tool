@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * ColumnResult contains the result of the test performed on a particular column of a table
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
