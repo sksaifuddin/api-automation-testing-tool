@@ -28,6 +28,10 @@ const TestCases = (props) => {
     }
   }
 
+  function refresh() {
+    window.location.reload(false);
+  }
+
   return (
     <Box>
       <div style={{ textAlign: "center" }}>
@@ -35,9 +39,9 @@ const TestCases = (props) => {
           variant="outlined"
           startIcon={<AddIcon />}
           style={{ width: "100%" }}
-          onClick={{}}
+          onClick={() => refresh()}
         >
-          Add Test Cases
+         <span>Add New Testcase</span>
         </LoadingButton>
       </div>
       <div style={{ height: "400px", overflow: "auto" }}>

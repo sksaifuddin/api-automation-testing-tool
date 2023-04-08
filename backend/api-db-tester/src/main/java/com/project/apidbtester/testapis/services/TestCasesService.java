@@ -6,6 +6,7 @@ import com.project.apidbtester.testapis.repositories.TestCaseDetailsRepository;
 import com.project.apidbtester.testapis.exceptions.TestCaseNotFoundException;
 import com.project.apidbtester.testapis.exceptions.TestCasesNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class TestCasesService {
 
     public List<TestCaseDetails> fetchAllTestCases() {
         try {
-            return testCaseDetailsRepository.findAll();
+            return testCaseDetailsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         } catch (Exception e) {
             throw new TestCasesNotFoundException();
         }

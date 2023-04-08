@@ -36,12 +36,18 @@ const TestOutput = ({ data }) => {
     }
   };
 
+  const getApiTestCaseResultIcon = (data) => {
+    if(data.columnValues) {
+      return iconForTestCasesPassed(true);
+    }
+
+    return iconForTestCasesPassed(data.allTestPassed)
+  }
+
   return (
     <>
       <div className="container">
         <div style={{ display: "flex" }}>
-          {/* {iconForTestCasesPassed(data.allTestPassed)}
-        {messageForAllTestCasesPassed(data.allTestPassed)} */}
           <Box sx={{ width: 1000, marginBottom: 2 }}>
             <div className="result-heading">API Result:</div>
             <TableContainer component={Paper} sx={{ width: 1050 }}>
@@ -61,7 +67,7 @@ const TestOutput = ({ data }) => {
                 <TableBody>
                   <TableRow>
                     <TableCell>
-                      {iconForTestCasesPassed(data.allTestPassed)}
+                      {getApiTestCaseResultIcon(data)}
                     </TableCell>
                     <TableCell>{data.httpStatusCode}</TableCell>
                     <TableCell>
