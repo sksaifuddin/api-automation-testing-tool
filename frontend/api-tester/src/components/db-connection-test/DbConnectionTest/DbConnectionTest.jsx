@@ -29,7 +29,7 @@ const DbConnectionTest = (props) => {
             setUsername(databaseDetails.userName);
         });
         
-    })
+    }, [])
 
     async function testConnection() {
         setBtnLoader(true)
