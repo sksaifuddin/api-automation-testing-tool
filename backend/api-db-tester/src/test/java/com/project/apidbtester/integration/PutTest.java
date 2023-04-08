@@ -30,7 +30,7 @@ public class PutTest {
         String apiBody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
-                "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/updateProducer\",\n" +
                 "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +
@@ -70,7 +70,7 @@ public class PutTest {
         String apiBody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
-                "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/updateProducer\",\n" +
                 "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +

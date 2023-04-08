@@ -30,7 +30,7 @@ public class PostTest {
         String apibody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"post\",\n" +
-                "        \"url\": \"http://localhost:9191/addProducer\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/addProducer\",\n" +
                 "        \"payload\": \"{\\\"first_name\\\":\\\"Rohit\\\",\\\"last_name\\\":\\\"Sharma\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":73}\",\n" +
                 "        \"tableName\": \"producers\"\n" +
                 "    },\n" +
@@ -64,7 +64,7 @@ public class PostTest {
         String s = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"post\",\n" +
-                "        \"url\": \"http://localhost:9191/addProducer\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/addProducer\",\n" +
                 "        \"payload\": \"{\\\"first_name\\\":\\\"Rohit\\\",\\\"last_name\\\":\\\"Sharma\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":73}\",\n" +
                 "        \"tableName\": \"producers\"\n" +
                 "    },\n" +
