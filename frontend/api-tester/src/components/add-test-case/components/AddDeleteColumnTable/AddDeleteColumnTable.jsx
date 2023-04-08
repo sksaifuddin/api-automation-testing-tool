@@ -66,7 +66,7 @@ function AddDeleteColumnTable({columns, getColumnValues}) {
                 id="demo-simple-select-required"
                 value={item.columnName}
                 label="Type *"
-                onChange={handleColumnNameSelected}
+                onChange={(e) => handleColumnNameSelected(e)}
               >
                 {getColumnMenu()}
               </Select>
@@ -79,7 +79,7 @@ function AddDeleteColumnTable({columns, getColumnValues}) {
               disabled={!item.columnName}
               value={item.expectedValue || undefined}
               label="value"
-              onBlur={(event) => handleColumnValueChange(event, item)}
+              onChange={(event) => handleColumnValueChange(event, item)}
             />
             {
                 index === items.length-1 && (
