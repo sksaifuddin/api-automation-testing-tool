@@ -22,7 +22,7 @@ project_smells:
     - java -jar .gitlab/DesigniteJava.jar -i api-db-tester -o smells/ -d
   artifacts:
     paths:
-      - smells/
+      - backend/smells/
       - backend/api-db-tester
 
 maven_build:
