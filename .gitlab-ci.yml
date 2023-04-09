@@ -9,3 +9,12 @@ frontend:
   rules:
     - changes:
       - frontend/api-tester/*
+
+backend:
+  stage: backend_pipeline
+  trigger:
+    include:
+      - local: backend/api-db-tester/.gitlab-ci.yml
+  rules:
+    - changes: 
+      - backend/api-db-tester/*
