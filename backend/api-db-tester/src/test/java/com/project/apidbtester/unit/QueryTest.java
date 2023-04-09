@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryTest {
 
+    private final int SUCCESS = 200;
+
     @Test
     public void testGenerateSelectQuery() {
         // Arrange
@@ -28,7 +30,7 @@ public class QueryTest {
     @Test
     public void testGenerateSelectQueryWithWhereClause() {
         // Arrange
-        TestCaseDetails testCaseDetails = new TestCaseDetails(1, "type", "url", "payload", "tableName", "primaryKeyName", "primaryKeyValue", 200, "", false);
+        TestCaseDetails testCaseDetails = new TestCaseDetails(1, "type", "url", "payload", "tableName", "primaryKeyName", "primaryKeyValue", SUCCESS, "", false);
 
         List<TestColumnValue> testColumnValues = Arrays.asList(
                 new TestColumnValue(1, "column1", "Hello1", "Hello1", false, testCaseDetails),
@@ -48,7 +50,7 @@ public class QueryTest {
     @Test
     public void testGenerateCountQueryWithWhereClause() {
         // Arrange
-        TestCaseDetails testCaseDetails = new TestCaseDetails(1, "type", "url", "payload", "tableName", "primaryKeyName", "primaryKeyValue", 200, "", false);
+        TestCaseDetails testCaseDetails = new TestCaseDetails(1, "type", "url", "payload", "tableName", "primaryKeyName", "primaryKeyValue", SUCCESS, "", false);
 
         String expectedQuery = "select count(*) from tableName where primaryKeyName = primaryKeyValue;";
 
