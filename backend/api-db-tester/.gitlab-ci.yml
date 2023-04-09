@@ -1,0 +1,29 @@
+default:
+  tags:
+    - deploymentrunner
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  USERNAME: csci5308vm16
+  HOST: csci5308vm16.research.cs.dal.ca
+  PORT: 22
+
+maven-build:
+  stage: build
+  image: maven:latest
+  script:
+    - cd backend/api-db-tester
+    - echo "Build started"
+    - java -version
+    - export JAVA_HOME=/usr/lib/jvm/java-17-oracle
+    - mvn -version
+    - mvn clean package
+  artifacts:
+    paths:
+      - backend/api-db-tester/target/*.jar
+
+
