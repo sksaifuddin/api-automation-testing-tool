@@ -16,8 +16,9 @@ variables:
 project_smells:
   stage: smells
   script:
+    - cd backend/api-db-tester
     - mkdir smells/
-    - java -jar $CI_PROJECT_DIR/.gitlab/DesigniteJava.jar -i $CI_PROJECT_DIR -o smells/ -d
+    - java -jar /.gitlab/DesigniteJava.jar -i $CI_PROJECT_DIR -o smells/ -d
   artifacts:
     paths:
       - smells/
