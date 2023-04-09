@@ -40,6 +40,8 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
     });
   };
 
+  const isPayloadDisabled = (testCaseDetails.type === 'delete' || testCaseDetails.type === 'get');
+
   const getTestCaseDetails = (otherTestCaseDetails) => {
     // console.log('test case details', testCaseDetails);
     // setTestCaseDetails({...testCaseDetails, ...otherTestCaseDetails});
@@ -86,6 +88,7 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
               onBlur={handlePayloadChange}
               placeholder="Payload Body"
               style={{ width: 400 }}
+              disabled={isPayloadDisabled}
             />
           </Grid>
           <Grid item xs={7}>
@@ -93,6 +96,7 @@ function AddTestCase({ clientDBMetaData, getFinalTestObject }) {
               <TestCaseDetails
                 getTestCaseDetails={getTestCaseDetails}
                 clientDBMetaData={{ ...clientDBMetaData }}
+                testCaseDetailsType={testCaseDetails.type}
               ></TestCaseDetails>
             )}
           </Grid>
