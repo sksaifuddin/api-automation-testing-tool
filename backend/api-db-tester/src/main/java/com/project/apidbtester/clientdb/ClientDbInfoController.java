@@ -30,7 +30,7 @@ public class ClientDbInfoController {
         return ResponseEntity.ok(clientDBInfoService.fetchClientDBMetaData());
     }
 
-    @GetMapping("/fetch-client-db-credentials")
+    @GetMapping("/get-client-db-credentials")
     public ResponseEntity<ClientDBCredentialsEntity> getClientDBCredentials() {
         return ResponseEntity.ok(clientDBInfoService.getClientDBCredentials());
     }

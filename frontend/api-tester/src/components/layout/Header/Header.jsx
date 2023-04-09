@@ -4,7 +4,7 @@ import styles from './Header.style.scss';
 const Header = (props) => {
     return <>
         <div className="HeaderContainer">
-            <p>API Database Tester TEST:2</p>
+            <p>API Database Tester TEST</p>
         </div>
     </>;
 }
