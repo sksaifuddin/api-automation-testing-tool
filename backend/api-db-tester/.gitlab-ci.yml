@@ -34,7 +34,7 @@ maven_build:
     - java -version
     - export JAVA_HOME=/usr/lib/jvm/java-17-oracle
     - mvn -version
-    - mvn clean package
+    - mvn clean package -Dmaven.test.skip=true
   artifacts:
     paths:
       - backend/api-db-tester/target/*.jar

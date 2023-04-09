@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const apiURL = 'api/test-client-db-connection';
-const getClientDBCredentialsURL = '/api/get-client-db-credentials';
+const apiURL = 'http://csci5308vm16.research.cs.dal.ca:8080/api/test-client-db-connection';
+const getClientDBCredentialsURL = 'http://csci5308vm16.research.cs.dal.ca:8080/api/get-client-db-credentials';
 
 export async function testClientDBConnection(url, userName, password) {
     const response = await axios.post(apiURL, {
