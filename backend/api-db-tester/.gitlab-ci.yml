@@ -26,4 +26,14 @@ maven-build:
     paths:
       - backend/api-db-tester/target/*.jar
 
+test:
+  stage: test
+  script:
+    - echo "Pipeline test started"
+    - cd backend/api-db-tester
+    - java -version
+    - export JAVA_HOME=/usr/lib/jvm/java-17-oracle
+    - mvn -version
+    - mvn verify
+
 
