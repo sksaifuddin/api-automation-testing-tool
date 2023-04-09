@@ -34,5 +34,5 @@ deploy:
     - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/var/www/csci5308vm16.research.cs.dal.ca/"
   only:
     # will change this later after finishing pipeline
-    - fixed-proxy-error
+    - develop
   
