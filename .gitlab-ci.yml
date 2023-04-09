@@ -1,6 +1,6 @@
 stages:
   - frontend_pipeline
-  - backend_pipeline
+  # - backend_pipeline
 
 frontend:
   stage: frontend_pipeline
@@ -11,11 +11,11 @@ frontend:
     - changes:
       - frontend/api-tester/*
 
-backend:
-  stage: backend_pipeline
-  trigger:
-    include:
-      - local: backend/api-db-tester/.gitlab-ci.yml
-  rules:
-    - changes: 
-      - backend/api-db-tester/*
+# backend:
+#   stage: backend_pipeline
+#   trigger:
+#     include:
+#       - local: backend/api-db-tester/.gitlab-ci.yml
+#   rules:
+#     - changes: 
+#       - backend/api-db-tester/*
