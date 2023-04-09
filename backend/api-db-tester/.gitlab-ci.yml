@@ -23,7 +23,7 @@ project_smells:
   artifacts:
     paths:
       - smells/
-      - $CI_PROJECT_DIR
+      - backend/api-db-tester
 
 maven_build:
   stage: build
