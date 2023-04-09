@@ -16,6 +16,8 @@ public class ClientDBDataTest {
 
     @Test
     public void testGetPrimaryKey() throws SQLException {
+
+        // Arrange
         Connection mockConnection = mock(Connection.class);
         DatabaseMetaData mockMetaData = mock(DatabaseMetaData.class);
         ResultSet mockResultSet = mock(ResultSet.class);
@@ -27,18 +29,25 @@ public class ClientDBDataTest {
 
         ClientDBData clientDBData = new ClientDBData();
         String expectedPrimaryKey = "id";
+
+        // Act
         String actualPrimaryKey = clientDBData.getPrimaryKey("tableName", mockConnection);
+
+        // Assert
         assertEquals(expectedPrimaryKey, actualPrimaryKey);
     }
 
     @Test
     public void testGetPrimaryKey_throwsSQLException() throws SQLException {
+
+        // Arrange
         Connection mockConnection = mock(Connection.class);
 
         when(mockConnection.getMetaData()).thenThrow(new SQLException());
 
         ClientDBData clientDBData = new ClientDBData();
 
+        // Act and Assert
         assertThrows(RuntimeException.class, () -> {
             clientDBData.getPrimaryKey("my_table", mockConnection);
         });

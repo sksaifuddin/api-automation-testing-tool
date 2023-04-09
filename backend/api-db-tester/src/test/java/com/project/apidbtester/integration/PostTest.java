@@ -19,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PostTest {
+    private final int SUCCESS = 200;
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -27,6 +29,7 @@ public class PostTest {
     @Test
     public void testPostRequest_WhenPassed() throws Exception {
 
+        // Arrange
         String apibody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"post\",\n" +
@@ -46,6 +49,7 @@ public class PostTest {
                 "    ]\n" +
                 "}";
 
+        // Act
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(apibody))
@@ -53,7 +57,9 @@ public class PostTest {
                 .andReturn();
 
         TestResponse testResponse = objectMapper.readValue(result.getResponse().getContentAsString(), TestResponse.class);
-        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(200));
+
+        // Assert
+        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(SUCCESS));
         assertEquals(testResponse.getAllTestPassed(), true);
 
     }
@@ -61,6 +67,7 @@ public class PostTest {
     @Test
     public void testPostRequest_WhenFailed() throws Exception {
 
+        // Arrange
         String s = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"post\",\n" +
@@ -80,6 +87,7 @@ public class PostTest {
                 "    ]\n" +
                 "}";
 
+        // Act
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(s))
@@ -87,7 +95,9 @@ public class PostTest {
                 .andReturn();
 
         TestResponse testResponse = objectMapper.readValue(result.getResponse().getContentAsString(), TestResponse.class);
-        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(200));
+
+        // Assert
+        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(SUCCESS));
         assertEquals(testResponse.getAllTestPassed(), false);
 
     }
