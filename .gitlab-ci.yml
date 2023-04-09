@@ -1,5 +1,6 @@
 stages:
   - frontend_pipeline
+  - backend_pipeline
 
 frontend:
   stage: frontend_pipeline
