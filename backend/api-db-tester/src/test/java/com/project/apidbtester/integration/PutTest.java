@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PutTest {
+    private final int SUCCESS = 200;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -27,14 +28,15 @@ public class PutTest {
     @Test
     public void testPutRequest_WhenPassed() throws Exception {
 
+        // Arrange
         String apiBody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
-                "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
-                "        \"payload\": \"{\\\"id\\\": 2, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/updateProducer\",\n" +
+                "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +
-                "        \"primaryKeyValue\": 2\n" +
+                "        \"primaryKeyValue\": 211\n" +
                 "    },\n" +
                 "    \"columnValues\": [\n" +
                 "        {\n" +
@@ -52,6 +54,7 @@ public class PutTest {
                 "    ]\n" +
                 "}\n";
 
+        // Act
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(apiBody))
@@ -59,7 +62,9 @@ public class PutTest {
                 .andReturn();
 
         TestResponse testResponse = objectMapper.readValue(result.getResponse().getContentAsString(), TestResponse.class);
-        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(200));
+
+        // Assert
+        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(SUCCESS));
         assertEquals(testResponse.getAllTestPassed(), true);
 
     }
@@ -67,14 +72,15 @@ public class PutTest {
     @Test
     public void testPutRequest_WhenFailed() throws Exception {
 
+        // Arrange
         String apiBody = "{\n" +
                 "    \"testCaseDetails\": {\n" +
                 "        \"type\": \"put\",\n" +
-                "        \"url\": \"http://localhost:9191/updateProducer\",\n" +
-                "        \"payload\": \"{\\\"id\\\": 2, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
+                "        \"url\": \"http://csci5308vm16.research.cs.dal.ca:9191/updateProducer\",\n" +
+                "        \"payload\": \"{\\\"id\\\": 211, \\\"first_name\\\":\\\"shubham\\\",\\\"last_name\\\":\\\"mishra\\\",\\\"gender\\\":\\\"m\\\",\\\"film_count\\\":25}\",\n" +
                 "        \"tableName\": \"producers\",\n" +
                 "        \"primaryKeyName\": \"id\",\n" +
-                "        \"primaryKeyValue\": 2\n" +
+                "        \"primaryKeyValue\": 211\n" +
                 "    },\n" +
                 "    \"columnValues\": [\n" +
                 "        {\n" +
@@ -92,6 +98,7 @@ public class PutTest {
                 "    ]\n" +
                 "}\n";
 
+        // Act
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(apiBody))
@@ -99,7 +106,9 @@ public class PutTest {
                 .andReturn();
 
         TestResponse testResponse = objectMapper.readValue(result.getResponse().getContentAsString(), TestResponse.class);
-        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(200));
+
+        // Assert
+        assertEquals(Optional.ofNullable(testResponse.getHttpStatusCode()), Optional.of(SUCCESS));
         assertEquals(testResponse.getAllTestPassed(), false);
 
     }

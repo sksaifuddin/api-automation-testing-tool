@@ -36,6 +36,7 @@ public class TestApiControllerTest {
 
 	@Test
 	public void testFetchTestResultWithPostRequest() {
+		// Arrange
 		TestInput testInput = new TestInput();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetails.setType("POST");
@@ -43,13 +44,18 @@ public class TestApiControllerTest {
 		TestResponse testResponse = new TestResponse();
 		testResponse.setHttpStatusCode(HttpStatus.OK.value());
 		when(postApiService.fetchTestResult(testInput)).thenReturn(testResponse);
+
+		// Act
 		ResponseEntity<TestResponse> response = controller.fetchTestResult(testInput);
+
+		// Assert
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		verify(postApiService, times(1)).fetchTestResult(testInput);
 	}
 
 	@Test
 	public void testFetchTestResultWithPutRequest() {
+		// Arrange
 		TestInput testInput = new TestInput();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetails.setType("PUT");
@@ -57,13 +63,18 @@ public class TestApiControllerTest {
 		TestResponse testResponse = new TestResponse();
 		testResponse.setHttpStatusCode(HttpStatus.OK.value());
 		when(putApiService.fetchTestResult(testInput)).thenReturn(testResponse);
+
+		// Act
 		ResponseEntity<TestResponse> response = controller.fetchTestResult(testInput);
+
+		// Assert
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		verify(putApiService, times(1)).fetchTestResult(testInput);
 	}
 
 	@Test
 	public void testFetchTestResultWithGetRequest() {
+		// Arrange
 		TestInput testInput = new TestInput();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetails.setType("GET");
@@ -71,13 +82,18 @@ public class TestApiControllerTest {
 		TestResponse testResponse = new TestResponse();
 		testResponse.setHttpStatusCode(HttpStatus.OK.value());
 		when(getApiService.fetchTestResult(testInput)).thenReturn(testResponse);
+
+		// Act
 		ResponseEntity<TestResponse> response = controller.fetchTestResult(testInput);
+
+		// Assert
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		verify(getApiService, times(1)).fetchTestResult(testInput);
 	}
 
 	@Test
 	public void testFetchTestResultWithDeleteRequest() {
+		// Arrange
 		TestInput testInput = new TestInput();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetails.setType("DELETE");
@@ -85,17 +101,24 @@ public class TestApiControllerTest {
 		TestResponse testResponse = new TestResponse();
 		testResponse.setHttpStatusCode(HttpStatus.OK.value());
 		when(deleteApiService.fetchTestResult(testInput)).thenReturn(testResponse);
+
+		// Act
 		ResponseEntity<TestResponse> response = controller.fetchTestResult(testInput);
+
+		// Assert
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		verify(deleteApiService, times(1)).fetchTestResult(testInput);
 	}
 
 	@Test
 	public void testFetchTestResultWithInvalidRequestType() throws TestApiController.InvalidRequestTypeException {
+		// Arrange
 		TestInput testInput = new TestInput();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetails.setType("INVALID_REQUEST_TYPE");
 		testInput.setTestCaseDetails(testCaseDetails);
+
+		// Act and Assert
 		assertThrows(TestApiController.InvalidRequestTypeException.class, () -> controller.fetchTestResult(testInput));
 	}
 
