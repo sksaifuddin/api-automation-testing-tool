@@ -18,7 +18,7 @@ project_smells:
   script:
     - cd backend/api-db-tester
     - mkdir smells/
-    - java -jar /.gitlab/DesigniteJava.jar -i $CI_PROJECT_DIR -o smells/ -d
+    - java -jar .gitlab/DesigniteJava.jar -i $CI_PROJECT_DIR -o smells/ -d
   artifacts:
     paths:
       - smells/
