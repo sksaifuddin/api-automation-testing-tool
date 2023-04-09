@@ -10,7 +10,7 @@ import {
 import AddDeleteColumnTable from "./AddDeleteColumnTable/AddDeleteColumnTable";
 import React, { useEffect, useState } from "react";
 
-function TestCaseDetails({ clientDBMetaData, getTestCaseDetails }) {
+function TestCaseDetails({ clientDBMetaData, getTestCaseDetails, testCaseDetailsType }) {
   const [testCaseDetails, setTestCaseDetails] = useState({
     tableName: "",
     primaryKeyName: "",
@@ -22,6 +22,8 @@ function TestCaseDetails({ clientDBMetaData, getTestCaseDetails }) {
     key: "",
     value: "",
   });
+
+  const isPrimaryKeyDisabled = testCaseDetailsType === 'post';
 
   useEffect(() => {
     // console.log('this is test case details', testCaseDetails);
@@ -129,12 +131,13 @@ function TestCaseDetails({ clientDBMetaData, getTestCaseDetails }) {
               // value={selectedPrimaryKeyValue.value || undefined}
               label="value"
               onBlur={(e) => handlePrimaryKeyValueChange(e)}
+              disabled={isPrimaryKeyDisabled}
             />
           </Grid>
         </Grid>
         <Grid container>
           <Grid item xs={12}>
-            {selectedTable && (
+            {selectedTable && testCaseDetailsType!=='delete' && (
               <AddDeleteColumnTable
                 columns={
                   getSelectedTableData(selectedTable)[0]?.data.columnsList
