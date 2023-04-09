@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiURL = 'api/get-client-db-metadata';
+const apiURL = 'http://csci5308vm16.research.cs.dal.ca:8080/api/get-client-db-metadata';
 
 export async function getClientDBMetadata(url, userName, password) {
     const response = await axios.get(apiURL, {
