@@ -3,6 +3,7 @@ default:
     - deploymentrunner
 
 stages:
+  - smells
   - build
   - test
   - deploy
@@ -12,7 +13,17 @@ variables:
   HOST: csci5308vm16.research.cs.dal.ca
   PORT: 22
 
-maven-build:
+project_smells:
+  stage: smells
+  script:
+    - mkdir smells/
+    - java -jar $CI_PROJECT_DIR/.gitlab/DesigniteJava.jar -i $CI_PROJECT_DIR -o smells/ -d
+  artifacts:
+    paths:
+      - smells/
+      - $CI_PROJECT_DIR
+
+maven_build:
   stage: build
   image: maven:latest
   script:
