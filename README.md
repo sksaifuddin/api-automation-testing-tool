@@ -318,3 +318,7 @@ Test coverage report:
 
 
 Api Documentation can be found here: [API Documentation](./documentation/ApiDocumentation.pdf)
+
+Final Presentation Link: [Final Presentation](./documentation/Presentation.pptx)
+
+Contribution statement: [Contribution Statement](./documentation/ContributionStatement.xlsx)
