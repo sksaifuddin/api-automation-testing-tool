@@ -1,0 +1,38 @@
+default:
+  image: node:16
+  tags:
+    - deploymentrunner
+
+variables:
+  USERNAME: csci5308vm16
+  HOST: csci5308vm16.research.cs.dal.ca
+  PORT: 22
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: node:16
+  script:
+   - cd frontend/api-tester
+   - npm install
+   - npm run build
+  artifacts:
+    paths:
+      - frontend/api-tester/build/
+
+deploy:
+  stage: deploy
+  script:
+    - echo "React deploy started"
+    - echo "deployment-key:${DEPLOYMENT_PRIVATE_KEY}"
+    - eval $(ssh-agent -s)
+    - chmod og-rwx ${DEPLOYMENT_PRIVATE_KEY}
+    - ssh -o StrictHostKeyChecking=no -i ${DEPLOYMENT_PRIVATE_KEY} 'csci5308vm16@csci5308vm16.research.cs.dal.ca' "echo 'ssh connection success'"
+    - scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/var/www/csci5308vm16.research.cs.dal.ca/"
+  only:
+    # will change this later after finishing pipeline
+    - develop
+  
