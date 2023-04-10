@@ -21,6 +21,9 @@ import java.util.List;
 
 import io.restassured.response.Response;
 
+/**
+ * GetApiService is used to test get api request
+ */
 @Service
 public class GetApiService {
 
@@ -33,7 +36,7 @@ public class GetApiService {
     @Autowired
     private ModelMapper modelMapper;
 
-    private TestRequest testRequest = new TestRequest();
+    private TestRequest testRequest = new TestRequest(); // used to forward the api to the client app
 
     public TestResponse fetchTestResult(TestInput testInput) {
 
@@ -42,12 +45,14 @@ public class GetApiService {
         TestResponse testResponse = new TestResponse();
 
         try {
+            // forward the api to client app
             Response r = testRequest.sendRequest(testCaseDetails);
             if (r == null) throw new ConnectException();
 
             testResponse.setHttpStatusCode(r.statusCode());
             testCaseDetails.setHttpStatusCode(r.statusCode());
 
+            // error response from client app
             if (r.statusCode() != HttpStatus.OK.value()) {
                 testResponse.setHttpErrorMsg(r.statusLine());
                 testCaseDetails.setPassed(false);
@@ -56,10 +61,13 @@ public class GetApiService {
                 return testResponse;
             }
 
+            // success response from client app
+            // parse response received from client app
             JSONObject jsonObject = new JSONObject(r.asString());
 
             boolean allTestPassed = true;
 
+            // verify each column value
             for (TestColumnValue columnValue : testColumnValues) {
                 if (columnValue.getExpectedValue().toString()
                         .equals(jsonObject.get(columnValue.getColumnName()).toString())) {
@@ -70,10 +78,13 @@ public class GetApiService {
                 columnValue.setActualValue(jsonObject.get(columnValue.getColumnName()).toString());
             }
 
+            // set if all tests passed
             if (allTestPassed) {
                 testCaseDetails.setPassed(true);
                 testResponse.setAllTestPassed(true);
             }
+
+            // save test details to db and return test response
             TestCaseDetails testCaseDetailsSaved = testCaseDetailsRepository.save(testCaseDetails);
 
             for (TestColumnValue testColumnValue : testColumnValues) {
@@ -84,6 +95,7 @@ public class GetApiService {
 
             return testResponse;
         } catch (Exception e) {
+            // handle exceptions
             testResponse.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
             testResponse.setHttpErrorMsg(Constants.UNABLE_TO_CONNECT_CLIENT);
             return testResponse;

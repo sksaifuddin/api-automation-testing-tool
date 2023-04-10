@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * TestColumnValue contains the column details and its expected value to be tested by the tester
+ */
 @Data
 @Entity
 @AllArgsConstructor

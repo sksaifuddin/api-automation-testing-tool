@@ -10,12 +10,20 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * ClientDBInfoService is used to process the data sent by ClientDB
+ */
 @Service
 public class ClientDBInfoService {
 
     @Autowired
     private ClientDBInfoRepository clientDBInfoRepository;
 
+    /**
+     * test client db connection
+     * @param clientDBCredentialsEntity
+     * @return response if connection was successful or not
+     */
     public String testClientDBConnection(ClientDBCredentialsEntity clientDBCredentialsEntity) {
         try {
             String dbUrl = clientDBCredentialsEntity.getDatabaseUrl();
@@ -32,10 +40,18 @@ public class ClientDBInfoService {
         }
     }
 
+    /**
+     * Get the credentials of client db
+     * @return client db credentials
+     */
     public ClientDBCredentialsEntity getClientDBCredentials() {
         return clientDBInfoRepository.findById(Constants.DB_CREDENTIALS_ID).orElseThrow(()-> new ClientDBCredentialsNotFoundException());
     }
 
+    /**
+     * fetch the metadata of client db
+     * @return client db metadata
+     */
     public Map<String, ClientDBMetaData> fetchClientDBMetaData() {
         try {
             Connection connection = getClientDBCConnection();
@@ -86,6 +102,10 @@ public class ClientDBInfoService {
         }
     }
 
+    /**
+     * makes and returns the connection to client db
+     * @return connection object of client db 
+     */
     public Connection getClientDBCConnection() {
         try {
             ClientDBCredentialsEntity clientDBCredentials = clientDBInfoRepository.findById(Constants.DB_CREDENTIALS_ID).orElseThrow(() -> new ClientDBCredentialsNotFoundException());
