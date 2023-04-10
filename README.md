@@ -1,10 +1,15 @@
 # API Database Tester
 
-An application which allows you to automate and test API and database together.
+An application which allows you to automate and test API and database together 💥💥. 
+
+
+**TECH STACK:**
 
 Frontend - React.js
 
 Backend - Spring Boot
+
+client project - Spring Boot
 
 ## Project setup
 
@@ -51,7 +56,7 @@ Best way to run is obviously using any IDE like IntelliJ which will download all
 
 #### To run the application from CMD using maven
 
-NOTE: we also need client application to run test the application. Its details are provided in next section.
+**NOTE: we also need client application to run test the application. Its details are provided in next section.**
 
 Make sure you have maven installed in your system.
 
@@ -76,7 +81,7 @@ mvn clean package
 ```
 This will generate a jar file which will be then deployed on the server.
 
-Maven dependencies:
+**Maven dependencies:**
 
 1. spring-boot-starter-web
 
@@ -129,7 +134,7 @@ All the builds and deployment of the application happens automated in the gitlab
 
 The pipeline performs all the steps of the build and depencies installation and copies the required content to the VM using scp to the required folders need to deployment. The deployment details are provide below.
 
-Architecture:
+**Architecture:**
 
 The pipeline in the project used Mutli-project pipelines architecure.
 
@@ -139,11 +144,11 @@ Since there are two project in one repo (backend and frontend) using this archit
 
 ### Deployment
 
-The deployment is automated using pipelines. The deployment will be triggered for every merge of the main branch.
+**The deployment is automated using pipelines.** The deployment will be triggered for every merge of the main branch.
 
 The other details of how the deployment is done for both frontend and backend is given below:
 
-Frontend deployment:
+**FRONTEND DEPLOYMENT**:
 
 The deployment is done using nginx static server. For the frontend deployment there is a server folder made by nginx on the vm in the folder /var/www/${hostname}. The server looks for index.html file and serves it.
 
@@ -153,7 +158,7 @@ Now that we have our server ready we just need to add and remove build content f
 scp -r -o StrictHostKeyChecking=no -i "${DEPLOYMENT_PRIVATE_KEY}" frontend/api-tester/build/* "$USERNAME@$HOST:/var/www/csci5308vm16.research.cs.dal.ca/"
 ```
 
-BACKEND DEPLOYMENT:
+**BACKEND DEPLOYMENT**:
 
 For deployment of spring boot we need to create an executable jar file from our pipeline. The jar file creation is already mentioned above. The same process will be done in the pipeline.
 
@@ -205,7 +210,7 @@ We also made analysis of our code smells through out the development. The follow
 
 ### User scenarios:
 
-Connecting to Client Application’s database:
+**Connecting to Client Application’s database:**
 
 1. Enter database credentials:
 
@@ -223,7 +228,7 @@ c. Url
 
 Testing the Client Application’s APIs:
 
-Testing POST API:
+**Testing POST API:**
 
 1. Choose type as POST.
 
@@ -243,7 +248,7 @@ Testing POST API:
 
 9. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
 
-Testing PUT API:
+**Testing PUT API:**
 
 1. Choose type as PUT.
 
@@ -263,7 +268,7 @@ Testing PUT API:
 
 9. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
 
-Testing GET API:
+**Testing GET API:**
 
 1. Choose type as GET.
 
@@ -281,7 +286,7 @@ Testing GET API:
 
 8. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
 
-Testing DELETE API:
+**Testing DELETE API:**
 
 1. Choose type as DELETE.
 
@@ -295,7 +300,7 @@ Testing DELETE API:
 
 6. It shows the response code and message from the API.
 
-Test History:
+**Test History:**
 
 Whenever a new test is performed, it gets added to the list of test cases performed. The list contains the API URL, API type and result of the test.
 
