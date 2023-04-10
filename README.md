@@ -142,6 +142,11 @@ Official documentation by gitlab: https://docs.gitlab.com/ee/ci/pipelines/downst
 
 Since there are two project in one repo (backend and frontend) using this architecture we can have a yml file for each project and these yml files will be triggered by a root yml file which will be in the root folder of the project.
 
+
+Here is the example of how pipeline looks:
+![Code Smells](./documentation/images/pipelines.png)
+
+![Code Smells](./documentation/images/pipelines-backend.png)
 ### Deployment
 
 **The deployment is automated using pipelines.** The deployment will be triggered for every merge of the main branch.
