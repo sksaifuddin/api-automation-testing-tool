@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TestCaseDetails contains the details of the test case sent by the tester
+ */
 @Data
 @Entity
 @Builder

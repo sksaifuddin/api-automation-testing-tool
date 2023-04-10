@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * TestResponse is used to return the result of the test
+ */
 @Data
 public class TestResponse {
     private Integer httpStatusCode;

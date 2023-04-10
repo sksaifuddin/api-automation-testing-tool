@@ -1,20 +1,21 @@
 package com.project.apidbtester.utils;
 
-import com.project.apidbtester.testapis.dtos.TestInput;
-import com.project.apidbtester.testapis.dtos.TestResponse;
 import com.project.apidbtester.testapis.entities.TestCaseDetails;
-import com.project.apidbtester.testapis.entities.TestColumnValue;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.springframework.http.HttpStatus;
 
-import java.net.ConnectException;
-import java.util.List;
-
+/**
+ * TestRequest is used to handle forward api requests to client app
+ */
 public class TestRequest {
 
+    /**
+     * Forward the request to client app
+     * @param testCaseDetails the details sent by the tester
+     * @return client app response
+     */
     public Response sendRequest(TestCaseDetails testCaseDetails) {
         try {
             RequestSpecification request = RestAssured.given();
@@ -25,6 +26,7 @@ public class TestRequest {
 
             Response response = null;
 
+            // forward request based on request type
             switch (testCaseDetails.getType().toLowerCase()) {
                 case "put" -> response = request.put();
                 case "post" -> response = request.post();
