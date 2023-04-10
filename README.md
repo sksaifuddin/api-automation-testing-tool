@@ -30,15 +30,6 @@ npm install
 
 The react application will be started now and you will see a new page on your browser.
 
-React dependencies:
-
-1. "@emotion/react": "^11.10.6",
-2. "@emotion/styled": "^11.10.6",
-3. "@mui/icons-material": "^5.11.11",
-4. "@mui/lab": "^5.0.0-alpha.122",
-5. "@mui/material": "^5.11.11",
-6. "axios": "^1.3.4",
-
 3. Build
 On the same root folder, run the following command
 
@@ -47,6 +38,15 @@ npm run build
 ```
 
 This will generate a new build folder which will have all the static files which can be then added to deployment server to deploy
+
+React dependencies:
+
+1. "@emotion/react": "^11.10.6",
+2. "@emotion/styled": "^11.10.6",
+3. "@mui/icons-material": "^5.11.11",
+4. "@mui/lab": "^5.0.0-alpha.122",
+5. "@mui/material": "^5.11.11",
+6. "axios": "^1.3.4",
 
 ### Backend
 
