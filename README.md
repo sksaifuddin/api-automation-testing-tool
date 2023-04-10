@@ -204,9 +204,11 @@ project_smells:
 
 Example of the files generated can be found here: https://git.cs.dal.ca/courses/2023-winter/csci-5308/group16/-/jobs/969769/artifacts/browse/backend/smells/
 
-We also made analysis of our code smells through out the development. The following graph shows the anayalsis of all types of smells.
+We also made analysis of our code smells throughout the development. The following graph shows the anayalsis of all types of smells.
 
-// add image here:
+![Code Smells](./documentation/images/code-smells.png)
+
+The code smells and their status can be found here: [Code smell analysis](./documentation/code-smell-analysis) 
 
 ### User scenarios:
 
@@ -306,10 +308,18 @@ Whenever a new test is performed, it gets added to the list of test cases perfor
 
 The screenshots of the outputs can be seen in this folder:
 
-// folder url here
+[User Scenario Screenshots](./documentation/UserScenarioScreenshots.pdf)
 
 ### Design principles:
 
-Throught the development we followed design principles like SOLID. The detailed review can be found here.
+Throughout the development we followed design principles like SOLID. The detailed review can be found here.
 
-// link to the solid principles file
+[Design Principles Followed](./documentation/DesignPrinciples.pdf)
+
+
+Test coverage report:
+
+![Test Coverage](./documentation/images/test-coverage.png)
+
+
+Api Documentation can be found here: [API Documentation](./documentation/ApiDocumentation.pdf)
