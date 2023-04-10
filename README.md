@@ -203,3 +203,108 @@ We also made analysis of our code smells through out the development. The follow
 
 // add image here:
 
+### User scenarios:
+
+Connecting to Client Application’s database:
+
+1. Enter database credentials:
+
+a. Username
+
+b. Password
+
+c. Url
+
+2. Click on Test button.
+
+3. Connection successful/failed message is displayed.
+
+4. If successful, proceed to testing, otherwise try again.
+
+Testing the Client Application’s APIs:
+
+Testing POST API:
+
+1. Choose type as POST.
+
+2. Enter the POST API’s URL that is to be tested.
+
+3. Enter the JSON payload required by the API.
+
+4. Choose the table that is modified by the API i.e in which POST API would make insertion.
+
+5. Select the columns that need to be tested. Enter the expected values of those columns. Multiple columns can be selected one by one.
+
+6. Click on Test button.
+
+7. Test result is displayed.
+
+8. It shows the response code and message from the API.
+
+9. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
+
+Testing PUT API:
+
+1. Choose type as PUT.
+
+2. Enter the PUT API’s URL that is to be tested.
+
+3. Enter the JSON payload required by the API.
+
+4. Choose the table that is modified by the API i.e in which PUT API would make changes.
+
+5. Select the columns that need to be tested. Enter the expected values of those columns. Multiple columns can be selected one by one.
+
+6. Click on Test button.
+
+7. Test result is displayed.
+
+8. It shows the response code and message from the API.
+
+9. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
+
+Testing GET API:
+
+1. Choose type as GET.
+
+2. Enter the GET API’s URL that is to be tested.
+
+3. Choose the table from which the API fetches the data.
+
+4. Select the columns that need to be tested. Enter the expected values of those columns. Multiple columns can be selected one by one.
+
+5. Click on Test button.
+
+6. Test result is displayed.
+
+7. It shows the response code and message from the API.
+
+8. It also shows the list of columns with their expected and actual values and whether the test passed or failed.
+
+Testing DELETE API:
+
+1. Choose type as DELETE.
+
+2. Enter the DELETE API’s URL that is to be tested.
+
+3. Choose the table from which the API deletes the data.
+
+4. Click on Test button.
+
+5. Test result is displayed.
+
+6. It shows the response code and message from the API.
+
+Test History:
+
+Whenever a new test is performed, it gets added to the list of test cases performed. The list contains the API URL, API type and result of the test.
+
+The screenshots of the outputs can be seen in this folder:
+
+// folder url here
+
+### Design principles:
+
+Throught the development we followed design principles like SOLID. The detailed review can be found here.
+
+// link to the solid principles file
