@@ -4,6 +4,7 @@ An application which allows you to automate and test API and database together ð
 
 Application was built by a group of 5 students during the course **CSCI 5308 - Advance Topics in Software Development** and secured "A+" grade.
 
+## Team Members
 <table>
   <tr>
     <td align="center"><a href="https://github.com/sksaifuddin">
