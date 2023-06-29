@@ -2,6 +2,21 @@
 
 An application which allows you to automate and test API and database together 💥💥. 
 
+Application was built by a group of 5 students during the course **CSCI 5308 - Advance Topics in Software Development** and secured "A+" grade.
+
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/sksaifuddin">
+      <img src="https://avatars2.githubusercontent.com/u/31506305?s=400&u=165e90bdcd76bc6337c905febc0c5c3d83afb7db&v=4" width="100px;" alt=""/>
+      <br /><sub><b>SHAIK SAIFUDDIN</b></sub></a>
+    </td>
+     <td align="center"><a href="https://github.com/shubham101096">
+      <img src="https://avatars.githubusercontent.com/u/42842288?v=4" width="100px;" alt=""/>
+      <br /><sub><b>SHUBHAM MISHRA</b></sub></a>
+    </td>
+  </tr>
+</table>
+
 **TECH STACK:**
 
 Frontend - React.js
@@ -9,6 +24,11 @@ Frontend - React.js
 Backend - Spring Boot
 
 client project - Spring Boot
+
+## Working demo video
+
+https://github.com/sksaifuddin/api-automation-testing-tool/assets/31506305/32860c65-de6c-4af1-a148-becee6ac4883
+
 
 ## Project setup
 
