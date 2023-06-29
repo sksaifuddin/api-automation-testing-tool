@@ -20,8 +20,8 @@ Application was built by a group of 5 students during the course **CSCI 5308 - A
       <br /><sub><b>VATSAL JAIN</b></sub></a>
     </td>
      <td align="center"><a href="">
-      <img src="RAJ PATEL" width="100px;" alt=""/>
-      <br /><sub><b>SHUBHAM MISHRA</b></sub></a>
+      <img src="https://avatars.githubusercontent.com/u/42842288?v=4" width="100px;" alt=""/>
+      <br /><sub><b>RAJ PATEL</b></sub></a>
     </td>
      <td align="center"><a href="">
       <img src="https://avatars.githubusercontent.com/u/42842288?v=4" width="100px;" alt=""/>
