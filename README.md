@@ -17,10 +17,6 @@ client project - Spring Boot
 
 1. Clone the project
 
-```
-git@git.cs.dal.ca:courses/2023-winter/csci-5308/group16.git
-```
-
 2. Download all the dependencies
 
 ```
