@@ -2,7 +2,6 @@
 
 An application which allows you to automate and test API and database together 💥💥. 
 
-
 **TECH STACK:**
 
 Frontend - React.js
@@ -106,20 +105,6 @@ This will generate a jar file which will be then deployed on the server.
 To do the testing, development and demo, example APIs with database is required. This is project will be then used as client project for our application.
 
 LINK: https://git.cs.dal.ca/shubhamm/demo-api-application-maven
-
-This is just a simple spring boot application and steps to run are same as any other spring boot application.
-
-This application is also already deployed and can be accessed using this server.
-
-```
-http://csci5308vm16.research.cs.dal.ca:9191/
-```
-
-Example: To get all the producers from the producers tables use the end point.
-
-```
-http://csci5308vm16.research.cs.dal.ca:9191/producers
-```
 
 
 ## CI/CD
